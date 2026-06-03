@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linkju — MVP 調研報告</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --section-bg: #f9fafb;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --yellow: #d97706;
+      --yellow-bg: #fffbeb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); font-size: 15px; line-height: 1.65; }
+    a { color: var(--accent); text-decoration: none; }
+
+    header { background: var(--accent); color: white; padding: 40px 48px 32px; }
+    header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; }
+    header .subtitle { opacity: 0.8; margin-top: 4px; font-size: 14px; }
+    header .meta { margin-top: 20px; font-size: 13px; opacity: 0.7; }
+    header .badge-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    header .hbadge { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600; }
+
+    nav { background: var(--section-bg); border-bottom: 1px solid var(--border); padding: 12px 48px; font-size: 13px; display: flex; gap: 24px; flex-wrap: wrap; }
+    nav a { color: var(--muted); font-weight: 500; }
+    nav a:hover { color: var(--accent); }
+
+    .container { max-width: 920px; margin: 0 auto; padding: 48px 32px; }
+    section { margin-bottom: 56px; }
+    section h2 { font-size: 20px; font-weight: 700; border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 20px; color: var(--accent); }
+    h3 { font-size: 16px; font-weight: 600; margin: 22px 0 10px; }
+    p { margin-bottom: 12px; color: #374151; font-size: 14px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th { background: var(--accent); color: white; text-align: left; padding: 10px 14px; font-weight: 600; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: var(--section-bg); }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 16px 0; }
+    .card { border: 1px solid var(--border); border-radius: 10px; padding: 20px; background: white; }
+    .card .label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; }
+    .card .value { font-size: 22px; font-weight: 700; color: var(--accent); }
+    .card .desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .highlight { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+    .highlight strong { color: var(--accent); }
+
+    .warn { background: var(--yellow-bg); border-left: 4px solid var(--yellow); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .badge-p0 { background: #fee2e2; color: var(--red); }
+    .badge-p1 { background: #fef3c7; color: var(--yellow); }
+    .badge-p2 { background: #dcfce7; color: var(--green); }
+    .badge-changed { background: #ede9fe; color: #7c3aed; font-size: 11px; padding: 1px 7px; }
+
+    .position-box { border: 2px solid var(--accent); border-radius: 12px; padding: 24px 28px; margin: 16px 0; text-align: center; }
+    .position-box .tagline { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .position-box p { margin: 0; font-size: 14px; color: var(--muted); }
+
+    .meddic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 16px 0; }
+    .meddic-card { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+    .meddic-card .m-letter { font-size: 18px; font-weight: 800; color: var(--accent); }
+    .meddic-card .m-name { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .meddic-card .m-content { font-size: 13.5px; }
+
+    .persona-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 16px 0; }
+    .persona { border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+    .persona .role { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .persona .freq { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .persona ul { list-style: none; padding: 0; }
+    .persona ul li { padding: 4px 0; padding-left: 16px; position: relative; font-size: 13px; }
+    .persona ul li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
+
+    .platform-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    .platform-card { border-radius: 10px; padding: 18px; }
+    .platform-card.mobile { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .platform-card.web { background: var(--green-bg); border: 1px solid #bbf7d0; }
+    .platform-card .plabel { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+    .platform-card p { font-size: 13px; }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .metric-item { background: var(--section-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .metric-item .m-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    .metric-item .m-value { font-size: 18px; font-weight: 700; color: var(--green); }
+
+    .exclude-list { list-style: none; padding: 0; }
+    .exclude-list li { padding: 8px 14px 8px 36px; border-bottom: 1px solid var(--border); position: relative; font-size: 13.5px; color: var(--muted); }
+    .exclude-list li::before { content: "✕"; position: absolute; left: 12px; color: var(--red); font-weight: 700; }
+
+    footer { border-top: 1px solid var(--border); padding: 24px 48px; font-size: 12px; color: var(--muted); background: var(--section-bg); }
+
+    @media (max-width: 600px) {
+      header, nav, footer { padding-left: 20px; padding-right: 20px; }
+      .container { padding: 32px 20px; }
+      .platform-split { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Linkju 智慧社區 — MVP 調研報告</h1>
+  <div class="subtitle">市場分析 · 競品研究 · 產業結構 · 最終 MVP 定義</div>
+  <div class="badge-row">
+    <span class="hbadge">5 輪 Agent 研究</span>
+    <span class="hbadge">台灣物業管理產業</span>
+    <span class="hbadge">競品分析完成</span>
+    <span class="hbadge">MVP Scope 確定</span>
+  </div>
+  <div class="meta">最後更新：2026-06-03 &nbsp;｜&nbsp; 階段：MVP Phase — 研究完成，準備進入開發</div>
+</header>
+
+<nav>
+  <a href="#market">市場概況</a>
+  <a href="#competitors">競品分析</a>
+  <a href="#customer">客戶結構</a>
+  <a href="#platform">平台決策</a>
+  <a href="#mvp">MVP 範疇</a>
+  <a href="#positioning">定位</a>
+  <a href="#metrics">成功指標</a>
+  <a href="#exclude">不做的事</a>
+</nav>
+
+<div class="container">
+
+  <!-- 市場概況 -->
+  <section id="market">
+    <h2>市場概況</h2>
+    <div class="card-grid">
+      <div class="card">
+        <div class="label">台灣社區總數</div>
+        <div class="value">~40,000</div>
+        <div class="desc">全台住宅社區</div>
+      </div>
+      <div class="card">
+        <div class="label">未被滲透市場</div>
+        <div class="value">~26,000</div>
+        <div class="desc">尚無物業管理 App</div>
+      </div>
+      <div class="card">
+        <div class="label">目標社區規模</div>
+        <div class="value">100–250</div>
+        <div class="desc">戶數，有專職管理員</div>
+      </div>
+      <div class="card">
+        <div class="label">MVP 銷售週期</div>
+        <div class="value">8–12 週</div>
+        <div class="desc">初次接觸到上線</div>
+      </div>
+    </div>
+    <p>市場由智生活（~80% 市佔）主導，但廣告驅動的商業模式留下明顯空白。超過三分之二的社區尚未數位化，Linkju 不需要搶存量，直接攻未被服務市場。</p>
+  </section>
+
+  <!-- 競品 -->
+  <section id="competitors">
+    <h2>競品分析</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>競品</th><th>核心優勢</th><th>主要弱點</th><th>收費</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>智生活</strong><br><small>市佔 ~80%</small></td>
+            <td>包裹處理 1,300萬件/年、支付整合完整</td>
+            <td>每日廣告 pop-up、通知無法細控、管理員功能弱</td>
+            <td>免費（廣告）+ 30/月去廣告</td>
+          </tr>
+          <tr>
+            <td><strong>中保好生活</strong><br><small>SECOM 旗下</small></td>
+            <td>無廣告、財務透明、好點回饋</td>
+            <td>依賴 SECOM 硬體、無服務市集、管理端仍弱</td>
+            <td>免費（商戶手續費）</td>
+          </tr>
+          <tr>
+            <td><strong>LINE Bot 替代方案</strong></td>
+            <td>零安裝阻力（95% 採用率案例）</td>
+            <td>功能有限、無法做複雜互動</td>
+            <td>LINE 官方帳號費用</td>
+          </tr>
+          <tr>
+            <td><strong>雙子星財務系統</strong></td>
+            <td>財務功能強大</td>
+            <td>無社區溝通功能、工具碎片化</td>
+            <td>軟體授權</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight">
+      <strong>關鍵洞察：</strong>智生活的 80% 市佔是建立在「包裹通知 + 公告 + 無縫採用」上，而非支付功能。支付是加速器不是門檻。沒有任何競品以「管理員效率」為核心設計。
+    </div>
+  </section>
+
+  <!-- 客戶結構 -->
+  <section id="customer">
+    <h2>客戶結構與採購決策</h2>
+
+    <div class="meddic-grid">
+      <div class="meddic-card">
+        <div class="m-letter">M</div>
+        <div class="m-name">Metrics — 成功指標</div>
+        <div class="m-content">每月省多少管理員工時；費用收繳率提升</div>
+      </div>
+      <div class="meddic-card">
+        <div class="m-letter">E</div>
+        <div class="m-name">Economic Buyer — 預算決定者</div>
+        <div class="m-content"><strong>主任委員（主委）</strong>＋財務委員。超出年度預算需全體管委會投票</div>
+      </div>
+      <div class="meddic-card">
+        <div class="m-letter">D</div>
+        <div class="m-name">Decision Process — 決策流程</div>
+        <div class="m-content">管理員試用 → 管理員推薦主委 → 主委評估省成本 → 管委會批准。8–12 週</div>
+      </div>
+      <div class="meddic-card">
+        <div class="m-letter">I</div>
+        <div class="m-name">Identify Pain — 真實痛點</div>
+        <div class="m-content">費用追收佔 40% 行政工時；公告合規無追蹤；維護排程靠紙本</div>
+      </div>
+      <div class="meddic-card">
+        <div class="m-letter">C</div>
+        <div class="m-name">Champion — 內部推手</div>
+        <div class="m-content"><strong>社區管理員/總幹事</strong>。天天用、最能感受痛點、有動機推薦給主委</div>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong>銷售策略：</strong>先讓管理員愛用（Champion），管理員去說服主委（Economic Buyer）。主委的語言是「省多少錢/工時」，不是「功能多不多」。
+    </div>
+
+    <h3>用戶角色</h3>
+    <div class="persona-grid">
+      <div class="persona">
+        <div class="role">社區管理員/總幹事</div>
+        <div class="freq">Champion · 每天 4–8 小時</div>
+        <ul>
+          <li>費用追收佔 40% 工時（WhatsApp 反覆追繳）</li>
+          <li>包裹堆積靠手工電話通知</li>
+          <li>維護排程紙本日曆，常錯過</li>
+          <li>公告不知道誰看了</li>
+        </ul>
+      </div>
+      <div class="persona">
+        <div class="role">住戶</div>
+        <div class="freq">End User · 每週 3–4 次 · 手機為主</div>
+        <ul>
+          <li>希望收到包裹到件即時通知</li>
+          <li>想看社區公告但不想裝太多 App</li>
+          <li>想預約健身房/停車不用打電話</li>
+        </ul>
+      </div>
+      <div class="persona">
+        <div class="role">主任委員（主委）</div>
+        <div class="freq">Economic Buyer · 每週 2–3 次</div>
+        <ul>
+          <li>在意省錢省工時，不在意功能數量</li>
+          <li>需要財務透明、合規稽核記錄</li>
+          <li>不想自己學複雜的工具</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 平台 -->
+  <section id="platform">
+    <h2>平台決策</h2>
+    <div class="platform-split">
+      <div class="platform-card mobile">
+        <div class="plabel">住戶端：原生 App（iOS + Android）</div>
+        <p>台灣用戶期待 push notification 和原生體驗。PWA 在 iOS 有功能限制，用戶教育成本高。住戶 80% 從手機使用。</p>
+      </div>
+      <div class="platform-card web">
+        <div class="plabel">管理員/主委端：Web Dashboard</div>
+        <p>財務報表與管理功能需要桌面 UX。管理員 60% 從電腦操作。Next.js 實作，與後端 NestJS 整合。</p>
+      </div>
+    </div>
+    <div class="warn">
+      <strong>LINE 整合（P1）：</strong>在原生 App 之外，P1 加入 LINE Official Account 作為通知補充管道。有案例顯示 LINE Bot 在 2 週內達到 95% 社區採用率——這不是替代 App，而是降低不願安裝 App 的住戶（尤其年長者）的阻力。
+    </div>
+  </section>
+
+  <!-- MVP 範疇 -->
+  <section id="mvp">
+    <h2>MVP 功能範疇（最終版）</h2>
+    <p>MVP 嚴格限定於<strong>單一社區驗證</strong>。預計 6–8 週完成（2 人團隊）。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>優先</th><th>功能</th><th>對象</th><th>關鍵說明</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-p0">P0 必須</span></td>
+            <td><strong>包裹到件通知</strong> <span class="badge badge-changed">升級自 P1</span></td>
+            <td>住戶</td>
+            <td>智生活靠此建立 80% 市佔；#1 住戶下載動機</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p0">P0 必須</span></td>
+            <td><strong>公告廣播＋已讀追蹤</strong></td>
+            <td>管理員 → 全體</td>
+            <td>管理員合規記錄需求；富文本、排程、已讀回執</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p0">P0 必須</span></td>
+            <td><strong>維修工單系統</strong></td>
+            <td>住戶 → 管理員</td>
+            <td>替代 WhatsApp 報修；照片上傳、狀態追蹤、分級</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p0">P0 必須</span></td>
+            <td><strong>角色帳號管理（RBAC）</strong></td>
+            <td>全體</td>
+            <td>住戶/管理員/主委三角色，社區範圍隔離</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p1">P1 上線後 3 月</span></td>
+            <td>訪客預約登記</td>
+            <td>住戶 + 管理員</td>
+            <td>QR Code 報到</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p1">P1 上線後 3 月</span></td>
+            <td>設施預約</td>
+            <td>住戶</td>
+            <td>公設行事曆，減少管理員電話</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p1">P1 上線後 3 月</span></td>
+            <td>帳單通知</td>
+            <td>管理員 → 住戶</td>
+            <td>通知金額與繳費狀態，不含收款 gateway</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p1">P1 上線後 3 月</span></td>
+            <td><strong>LINE Official Account 整合</strong> <span class="badge badge-changed">新增</span></td>
+            <td>住戶</td>
+            <td>降低安裝阻力，補充通知管道</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p1">P1 上線後 3 月</span></td>
+            <td>社區佈告欄</td>
+            <td>住戶 + 管理員</td>
+            <td>自由發文、圖片、管理員審核</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p2">P2 PMF 後</span></td>
+            <td>支付整合 <span class="badge badge-changed">降級自 P1</span></td>
+            <td>住戶</td>
+            <td>LINE Pay、信用卡、銀行轉帳。社區不靠 App 支付也能運作；是加速器非門檻</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p2">P2 PMF 後</span></td>
+            <td>財務稽核儀表板</td>
+            <td>主委</td>
+            <td>主委高價值需求，不影響初期採用</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p2">P2 PMF 後</span></td>
+            <td>維護保養排程提醒</td>
+            <td>管理員</td>
+            <td>高價值但非第一個月必要</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-p2">P2 PMF 後</span></td>
+            <td>IoT 整合 / 即時聊天 / 投票</td>
+            <td>—</td>
+            <td>驗證 PMF 後再規劃</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 定位 -->
+  <section id="positioning">
+    <h2>定位</h2>
+    <div class="position-box">
+      <div class="tagline">Linkju = 管理員的作業系統，住戶的乾淨體驗</div>
+      <p>向管委會/物業公司收 SaaS 月費，住戶免費使用、零廣告。<br>以管理員效率做差異化，而非與智生活打住戶功能戰。</p>
+    </div>
+
+    <h3>法規合規（從 Day 1 設計）</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>法規</th><th>對 Linkju 的具體要求</th></tr></thead>
+        <tbody>
+          <tr><td><strong>個資法</strong></td><td>不得公開列出滯納戶姓名；費用催繳需私訊而非公告；API 層面需 PII 存取審計 log</td></tr>
+          <tr><td><strong>公寓大廈管理條例</strong></td><td>財務記錄需支援透明稽核；審計追蹤是法規要求，也是產品賣點</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 成功指標 -->
+  <section id="metrics">
+    <h2>MVP 成功指標（前 3 個月）</h2>
+    <div class="metric-grid">
+      <div class="metric-item">
+        <div class="m-label">住戶週活躍率</div>
+        <div class="m-value">≥ 40%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">包裹通知開啟率</div>
+        <div class="m-value">≥ 70%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">公告 48h 閱讀率</div>
+        <div class="m-value">≥ 60%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">工單平均回應時間</div>
+        <div class="m-value">&lt; 24h</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">4 週住戶留存率</div>
+        <div class="m-value">≥ 25%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">管理員/主委滿意度</div>
+        <div class="m-value">≥ 7/10</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 不做 -->
+  <section id="exclude">
+    <h2>明確不做的事（MVP 範圍外）</h2>
+    <ul class="exclude-list">
+      <li>PWA 作為主要住戶平台（iOS 限制 + 用戶教育成本）</li>
+      <li>支付 gateway 整合（P2；社區不靠 App 支付也能運作）</li>
+      <li>WebSocket 即時通訊（Polling 在 MVP 足夠，公告不需低延遲）</li>
+      <li>IoT 整合（硬體依賴，MVP 驗證前不做）</li>
+      <li>跨社區管理（單一社區驗證後再擴展）</li>
+      <li>複雜財務報表（基本帳單通知即可）</li>
+      <li>即時群組聊天（LINE 已覆蓋此需求）</li>
+    </ul>
+  </section>
+
+</div>
+
+<footer>
+  Linkju — 內部調研文件 &nbsp;｜&nbsp; 最後更新：2026-06-03 &nbsp;｜&nbsp; 5 輪 Agent 研究基礎 &nbsp;｜&nbsp; 資料來源：App Store / PTT / 591 / 內政部 / 業界新聞 / GrandView Research
+</footer>
+
+</body>
+</html>

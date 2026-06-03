@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linkju Docs</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --section-bg: #f9fafb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: var(--accent);
+      color: white;
+      padding: 48px;
+    }
+    header h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+    header p { margin-top: 8px; opacity: 0.8; font-size: 15px; }
+
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 56px 32px;
+      flex: 1;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .doc-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .doc-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+    .doc-card .icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+    .doc-card .title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .doc-card .desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .doc-card .tag {
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .doc-card .updated {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    footer {
+      padding: 24px 48px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--section-bg);
+    }
+
+    @media (max-width: 600px) {
+      header, main, footer { padding-left: 20px; padding-right: 20px; }
+      header { padding-top: 32px; padding-bottom: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Linkju Docs</h1>
+  <p>Stakeholder reports, research, and playbooks — 供團隊與利害關係人參考</p>
+</header>
+
+<main>
+
+  <div class="section-label">Research & Reports</div>
+  <div class="doc-grid">
+
+    <a class="doc-card" href="mvp-research.html">
+      <div class="icon">📊</div>
+      <div class="title">MVP 調研報告</div>
+      <div class="desc">市場概況、競品分析、客戶結構、MVP 功能範疇與成功指標。涵蓋 5 輪 agent 研究成果。</div>
+      <div class="tag">Market Research</div>
+      <div class="updated">最後更新：2026-06-03</div>
+    </a>
+
+    <a class="doc-card" href="pm-bd-playbook.html">
+      <div class="icon">🧭</div>
+      <div class="title">PM/BD 分析框架</div>
+      <div class="desc">決策導向的分析方法論。5 個核心問題、輕量工具選擇、時間上限與速查表。</div>
+      <div class="tag">Methodology</div>
+      <div class="updated">最後更新：2026-06-03</div>
+    </a>
+
+  </div>
+
+</main>
+
+<footer>
+  Linkju &nbsp;｜&nbsp; <a href="https://github.com/PigeonPacket" style="color: inherit;">PigeonPacket</a> &nbsp;｜&nbsp; 文件更新頻率：每次重大調研或里程碑後
+</footer>
+
+</body>
+</html>

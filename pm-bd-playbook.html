@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linkju — PM/BD 分析框架</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --section-bg: #f9fafb;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --yellow: #d97706;
+      --yellow-bg: #fffbeb;
+      --purple: #7c3aed;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    header {
+      background: var(--accent);
+      color: white;
+      padding: 40px 48px 32px;
+    }
+    header h1 { font-size: 26px; font-weight: 700; }
+    header .sub { opacity: 0.8; margin-top: 6px; font-size: 14px; }
+    header .principle {
+      margin-top: 18px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    header .meta { margin-top: 16px; font-size: 12px; opacity: 0.65; }
+
+    nav {
+      background: var(--section-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 48px;
+      font-size: 13px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    nav a { color: var(--muted); font-weight: 500; text-decoration: none; }
+    nav a:hover { color: var(--accent); }
+
+    .container { max-width: 920px; margin: 0 auto; padding: 48px 32px; }
+
+    section { margin-bottom: 60px; }
+    section > h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 8px;
+      margin-bottom: 6px;
+    }
+    .q-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .q-meta span {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 22px 0 10px;
+    }
+
+    p { margin-bottom: 12px; color: #374151; font-size: 14px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 12px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th {
+      background: var(--accent);
+      color: white;
+      text-align: left;
+      padding: 9px 14px;
+      font-weight: 600;
+    }
+    td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: var(--section-bg); }
+
+    /* Flow cards */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .flow-item {
+      flex: 1;
+      min-width: 140px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .flow-item .num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .flow-item .ql { font-size: 13px; font-weight: 600; margin-top: 4px; }
+    .flow-item .action { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+    /* Highlight */
+    .highlight {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+
+    /* Tool box */
+    .tool-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+    .tool-header {
+      background: var(--section-bg);
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 13.5px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .time-badge {
+      margin-left: auto;
+      font-size: 12px;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .tool-body { padding: 14px 16px; font-size: 13.5px; }
+
+    /* JTBD grid */
+    .jtbd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
+    .jtbd-card {
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 13px;
+    }
+    .jtbd-card.func { background: var(--accent-light); border: 1px solid #bfdbfe; }
+    .jtbd-card.emo  { background: var(--yellow-bg); border: 1px solid #fde68a; }
+    .jtbd-card.soc  { background: var(--green-bg); border: 1px solid #bbf7d0; }
+    .jtbd-card .jlabel { font-weight: 700; font-size: 12px; margin-bottom: 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+
+    /* 2x2 grid */
+    .matrix-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0;
+      max-width: 480px;
+    }
+    .q-cell {
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 13px;
+    }
+    .q-cell .cell-label { font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+    .q-cell.do-first { background: #dcfce7; border: 1px solid #86efac; }
+    .q-cell.quick-win { background: #dbeafe; border: 1px solid #93c5fd; }
+    .q-cell.slow { background: var(--yellow-bg); border: 1px solid #fde68a; }
+    .q-cell.drop { background: var(--red-bg); border: 1px solid #fca5a5; }
+
+    /* Skip list */
+    .skip-list { list-style: none; padding: 0; }
+    .skip-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13.5px;
+    }
+    .skip-list li .name { font-weight: 600; min-width: 140px; color: var(--muted); text-decoration: line-through; }
+    .skip-list li .reason { color: #374151; }
+
+    /* Quick ref */
+    .qref-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13.5px;
+    }
+    .qref-row:last-child { border-bottom: none; }
+    .qref-row .situation { flex: 2; font-weight: 500; }
+    .qref-row .tool-rec { flex: 2; color: var(--accent); font-weight: 600; }
+    .qref-row .time-est { flex: 1; color: var(--muted); font-size: 12px; text-align: right; }
+    .qref-box { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .qref-head {
+      display: flex;
+      gap: 14px;
+      padding: 8px 14px;
+      background: var(--section-bg);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .qref-head .situation { flex: 2; }
+    .qref-head .tool-rec { flex: 2; }
+    .qref-head .time-est { flex: 1; text-align: right; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 48px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--section-bg);
+    }
+
+    @media (max-width: 600px) {
+      header, nav, footer { padding-left: 20px; padding-right: 20px; }
+      .container { padding: 32px 20px; }
+      .jtbd-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Linkju PM/BD 分析框架</h1>
+  <div class="sub">決策導向 · 輕量分析 · 有時間限制</div>
+  <div class="principle">
+    <strong>設計原則：</strong>所有框架的目的只有一個——幫你做一個更好的決策。<br>
+    每個決策只需要「夠好的答案」，不需要「完美的答案」。框架選擇標準：這個框架回答什麼問題？現在重要嗎？有沒有更快得到同等答案的方法？
+  </div>
+  <div class="meta">最後更新：2026-06-03</div>
+</header>
+
+<nav>
+  <a href="#overview">總覽</a>
+  <a href="#q1">市場存在？</a>
+  <a href="#q2">在哪裡贏？</a>
+  <a href="#q3">客戶是誰？</a>
+  <a href="#q4">現在做什麼？</a>
+  <a href="#q5">有沒有效？</a>
+  <a href="#quickref">速查表</a>
+  <a href="#skip">刻意省略</a>
+</nav>
+
+<div class="container">
+
+  <!-- ── 總覽 ── -->
+  <section id="overview">
+    <h2>5 個必要問題</h2>
+    <p>所有 PM/BD 分析最終都在回答以下 5 個問題。每個問題有對應的輕量工具、時間上限、標準輸出。</p>
+
+    <div class="flow">
+      <div class="flow-item">
+        <div class="num">1</div>
+        <div class="ql">市場真實存在嗎？</div>
+        <div class="action">值不值得進</div>
+      </div>
+      <div class="flow-item">
+        <div class="num">2</div>
+        <div class="ql">我們能在哪裡贏？</div>
+        <div class="action">要不要進、怎麼進</div>
+      </div>
+      <div class="flow-item">
+        <div class="num">3</div>
+        <div class="ql">客戶是誰、痛在哪？</div>
+        <div class="action">做給誰、賣給誰</div>
+      </div>
+      <div class="flow-item">
+        <div class="num">4</div>
+        <div class="ql">現在做什麼？</div>
+        <div class="action">優先順序</div>
+      </div>
+      <div class="flow-item">
+        <div class="num">5</div>
+        <div class="ql">有沒有效？</div>
+        <div class="action">繼續 / 調整 / 轉向</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Q1 ── -->
+  <section id="q1">
+    <h2>問題 1：市場真實存在嗎？</h2>
+    <div class="q-meta"><span>決策</span>要不要投入資源進入這個市場</div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        Problem × Frequency × Intensity 三角檢驗
+        <span class="time-badge">30 分鐘</span>
+      </div>
+      <div class="tool-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>問題</th><th>驗證方式</th><th>合格標準</th></tr></thead>
+            <tbody>
+              <tr><td>問題真實存在？</td><td>5+ 用戶訪談，或競品評論中出現同類抱怨</td><td>超過 3 人提同一問題</td></tr>
+              <tr><td>發生頻率夠高？</td><td>目標用戶多久遇到一次</td><td>至少每週一次</td></tr>
+              <tr><td>痛苦程度夠深？</td><td>現在怎麼解決（workaround 存在 = 問題真實）</td><td>有 workaround = 有機會</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        TAM / SAM / SOM 快速估算
+        <span class="time-badge">30 分鐘</span>
+      </div>
+      <div class="tool-body">
+        <table>
+          <thead><tr><th>層次</th><th>定義</th><th>怎麼估</th></tr></thead>
+          <tbody>
+            <tr><td><strong>TAM</strong></td><td>總市場規模</td><td>用市場報告數字（Perplexity 搜尋）</td></tr>
+            <tr><td><strong>SAM</strong></td><td>可服務市場</td><td>TAM × 你能觸及的地理/類型範圍</td></tr>
+            <tr><td><strong>SOM</strong></td><td>18 個月目標</td><td>SAM × 1–5%（現實能拿到的比例）</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;"><strong>輸出：</strong>一段話 + 三個數字 + 信心等級（高/中/低）</p>
+        <p><strong>什麼時候跳過：</strong>市場已有龍頭（有競品 = 市場存在），直接跳問題 2。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Q2 ── -->
+  <section id="q2">
+    <h2>問題 2：我們能在哪裡贏？</h2>
+    <div class="q-meta"><span>決策</span>定位——做什麼、不做什麼、跟誰不一樣</div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        2×2 定位地圖
+        <span class="time-badge">30 分鐘</span>
+      </div>
+      <div class="tool-body">
+        <p>選兩個對客戶<strong>最重要</strong>的維度，把競品點上去，找空白空間。不用波特五力——波特五力適合成熟產業，早期新創沒有足夠數據。</p>
+        <p><strong>Linkju 範例：</strong>X 軸 = 廣告導向 ↔ 無廣告，Y 軸 = 住戶 App ↔ 管理員優先</p>
+        <p><strong>輸出：</strong>一張圖 + 一句定位聲明（for X who Y, product Z does W, unlike A）</p>
+      </div>
+    </div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        功能對照表：Table Stakes vs. Differentiator
+        <span class="time-badge">1 小時</span>
+      </div>
+      <div class="tool-body">
+        <table>
+          <thead><tr><th>類型</th><th>定義</th><th>策略</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Table Stakes</strong></td><td>90%+ 競品都有，不做就輸</td><td>做到夠好就停，不要過度投資</td></tr>
+            <tr><td><strong>Differentiator</strong></td><td>少數競品有，或做得比別人好</td><td>護城河所在，加倍投入</td></tr>
+            <tr><td><strong>雜訊</strong></td><td>看起來酷但客戶不買單</td><td>砍掉</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Q3 ── -->
+  <section id="q3">
+    <h2>問題 3：客戶是誰、痛在哪？</h2>
+    <div class="q-meta"><span>決策</span>ICP 定義，以及功能要解決什麼問題</div>
+
+    <h3>JTBD（Jobs to be Done）精簡版</h3>
+    <p>只問三個問題，不需要完整 JTBD 研究流程：</p>
+
+    <div class="jtbd-grid">
+      <div class="jtbd-card func">
+        <div class="jlabel">功能性 Job</div>
+        客戶想完成什麼任務？<br><br>
+        <em>例：快速處理住戶報修請求</em>
+      </div>
+      <div class="jtbd-card emo">
+        <div class="jlabel">情感性 Job</div>
+        完成後他想感覺怎樣？<br><br>
+        <em>例：工作有條理、不被投訴</em>
+      </div>
+      <div class="jtbd-card soc">
+        <div class="jlabel">社交性 Job</div>
+        在別人眼中他想呈現什麼？<br><br>
+        <em>例：在住戶面前顯得專業</em>
+      </div>
+    </div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        3 Persona 上限原則
+        <span class="time-badge">1–2 小時（初版）</span>
+      </div>
+      <div class="tool-body">
+        <p>永遠只做 3 個 persona，超過就砍。每個 persona 只需要：角色 + 情境、最痛的 3 件事、成功對他長什麼樣子、使用頻率。</p>
+      </div>
+    </div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        BD：ICP（Ideal Customer Profile）
+        <span class="time-badge">30 分鐘</span>
+      </div>
+      <div class="tool-body">
+        <p>B2B 銷售用 ICP 取代 persona，聚焦在<strong>組織特徵</strong>而非個人特徵：</p>
+        <table>
+          <thead><tr><th>維度</th><th>要問的問題</th></tr></thead>
+          <tbody>
+            <tr><td>公司規模</td><td>幾戶？幾個管理員？</td></tr>
+            <tr><td>決策流程</td><td>誰有預算、誰影響決策、誰執行</td></tr>
+            <tr><td>購買觸發點</td><td>什麼事件讓他們開始評估新工具？</td></tr>
+            <tr><td>現在怎麼解決</td><td>現有工具或人工流程是什麼</td></tr>
+            <tr><td>切換成本</td><td>換工具的摩擦在哪裡</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Q4 ── -->
+  <section id="q4">
+    <h2>問題 4：現在做什麼？</h2>
+    <div class="q-meta"><span>決策</span>功能 / BD 機會的優先排序</div>
+
+    <h3>Impact × Effort 四象限（日常用）</h3>
+    <div class="matrix-2x2">
+      <div class="q-cell do-first">
+        <div class="cell-label">高 Impact × 高 Effort</div>
+        先做（主要工作）<br>
+        <small>值得投入的大功能</small>
+      </div>
+      <div class="q-cell quick-win">
+        <div class="cell-label">高 Impact × 低 Effort</div>
+        做完就上（快贏）<br>
+        <small>立刻執行</small>
+      </div>
+      <div class="q-cell slow">
+        <div class="cell-label">低 Impact × 高 Effort</div>
+        慢慢做（長期投資）<br>
+        <small>或等 P2</small>
+      </div>
+      <div class="q-cell drop">
+        <div class="cell-label">低 Impact × 低 Effort</div>
+        丟掉<br>
+        <small>不要因為容易就做</small>
+      </div>
+    </div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        RICE 排序（向 stakeholder 解釋時用）
+        <span class="time-badge">30 分鐘</span>
+      </div>
+      <div class="tool-body">
+        <p>當需要讓團隊/投資人理解優先順序邏輯，才用 RICE。不需要精確數字，用相對值（S/M/L）就夠。</p>
+        <div class="highlight"><strong>RICE 分數</strong> = (Reach × Impact × Confidence) ÷ Effort</div>
+      </div>
+    </div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        BD：MEDDIC 簡化版（機會評估）
+        <span class="time-badge">15 分鐘</span>
+      </div>
+      <div class="tool-body">
+        <table>
+          <thead><tr><th>字母</th><th>問題</th><th>紅燈信號</th></tr></thead>
+          <tbody>
+            <tr><td><strong>M</strong> Metrics</td><td>客戶的成功指標是什麼？能量化嗎？</td><td>客戶說不出成功長什麼樣子</td></tr>
+            <tr><td><strong>E</strong> Economic Buyer</td><td>誰有預算決定權？接觸到了嗎？</td><td>只接觸到使用者，沒有決策者</td></tr>
+            <tr><td><strong>D</strong> Decision Process</td><td>他們如何做決策？委員會還是單人？</td><td>不清楚流程 = 時程黑洞</td></tr>
+            <tr><td><strong>I</strong> Identify Pain</td><td>真正的痛點是什麼（vs. 表面需求）？</td><td>痛點模糊 = 不夠痛</td></tr>
+            <tr><td><strong>C</strong> Champion</td><td>內部有沒有推動者幫我們說話？</td><td>沒有 Champion = 機會評級降低</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;"><strong>原則：</strong>沒有 Champion + 沒有 Economic Buyer = 不要過度投入這個機會。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Q5 ── -->
+  <section id="q5">
+    <h2>問題 5：有沒有效？</h2>
+    <div class="q-meta"><span>決策</span>繼續、調整還是轉向</div>
+
+    <div class="tool-box">
+      <div class="tool-header">
+        North Star + 3 個 Leading Indicators
+        <span class="time-badge">設定一次，週會 10 分鐘</span>
+      </div>
+      <div class="tool-body">
+        <div class="highlight">
+          <strong>North Star：</strong>最能反映「產品核心價值被實現」的單一指標<br>
+          Linkju 範例：每週活躍住戶比例<br><br>
+          <strong>Leading Indicators（預測 North Star 的早期信號）：</strong><br>
+          1. 公告 48h 閱讀率（engagement）<br>
+          2. 工單平均回應時間（operational value）<br>
+          3. 新用戶第 7 天留存率（retention）
+        </div>
+        <p>追蹤超過 5 個指標 = 你不知道什麼重要。</p>
+      </div>
+    </div>
+
+    <h3>回顧節奏</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>頻率</th><th>看什麼</th></tr></thead>
+        <tbody>
+          <tr><td><strong>每週</strong></td><td>Leading indicators 有沒有異常</td></tr>
+          <tr><td><strong>每月</strong></td><td>North Star 趨勢 + 用戶訪談 2–3 場</td></tr>
+          <tr><td><strong>每季</strong></td><td>方向是否要調整（競品新動作、假設是否被推翻）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 速查 ── -->
+  <section id="quickref">
+    <h2>速查表</h2>
+
+    <div class="qref-box">
+      <div class="qref-head">
+        <div class="situation">情境</div>
+        <div class="tool-rec">用這個</div>
+        <div class="time-est">時間</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">要不要進這個市場</div>
+        <div class="tool-rec">Problem×Freq×Intensity + TAM/SAM/SOM</div>
+        <div class="time-est">1 小時</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">怎麼差異化</div>
+        <div class="tool-rec">2×2 定位圖 + 功能對照表</div>
+        <div class="time-est">30 分鐘</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">做給誰 / 賣給誰</div>
+        <div class="tool-rec">JTBD (3題) + 3 Persona / ICP</div>
+        <div class="time-est">1–2 小時</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">日常優先排序</div>
+        <div class="tool-rec">Impact × Effort 四象限</div>
+        <div class="time-est">15 分鐘</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">向 stakeholder 解釋排序</div>
+        <div class="tool-rec">RICE 相對評分</div>
+        <div class="time-est">30 分鐘</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">BD 機會值不值得追</div>
+        <div class="tool-rec">MEDDIC 簡化版</div>
+        <div class="time-est">15 分鐘</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">市場進入障礙評估</div>
+        <div class="tool-rec">波特五力（只用競爭者 + 替代品兩個維度）</div>
+        <div class="time-est">30 分鐘</div>
+      </div>
+      <div class="qref-row">
+        <div class="situation">是否轉向</div>
+        <div class="tool-rec">North Star + Leading Indicators 趨勢</div>
+        <div class="time-est">週會 10 分鐘</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Skip ── -->
+  <section id="skip">
+    <h2>刻意省略的框架</h2>
+    <p>這些框架有用，但在早期新創 PM/BD 場景下成本高於收益：</p>
+
+    <ul class="skip-list">
+      <li>
+        <div class="name">PEST 分析</div>
+        <div class="reason">描述環境但不幫決策；用 Perplexity 問 10 分鐘就有同等答案，不需要正式框架</div>
+      </li>
+      <li>
+        <div class="name">完整波特五力</div>
+        <div class="reason">早期新創沒有足夠的歷史數據；只需要「競爭者」和「替代品」兩個維度就夠</div>
+      </li>
+      <li>
+        <div class="name">BCG 矩陣</div>
+        <div class="reason">適合多產品線企業做組合管理，MVP 階段只有一條線，不適用</div>
+      </li>
+      <li>
+        <div class="name">McKinsey 7S</div>
+        <div class="reason">組織設計工具，不是 PM/BD 分析工具</div>
+      </li>
+      <li>
+        <div class="name">Ansoff 矩陣</div>
+        <div class="reason">增長策略規劃框架，在驗證 PMF 之前用太早</div>
+      </li>
+      <li>
+        <div class="name">完整 Blue Ocean</div>
+        <div class="reason">好概念，但完整分析過重；「2×2 定位圖」得到 80% 的洞察</div>
+      </li>
+      <li>
+        <div class="name">完整 Empathy Map</div>
+        <div class="reason">8 個象限耗時；JTBD 的 3 個問題得到同等品質的用戶理解</div>
+      </li>
+      <li>
+        <div class="name">加權評分矩陣</div>
+        <div class="reason">看起來精確，但權重本身就是主觀的；Impact×Effort 快很多，結論相似</div>
+      </li>
+    </ul>
+  </section>
+
+</div>
+
+<footer>
+  Linkju — 內部工作方法論 &nbsp;｜&nbsp; 最後更新：2026-06-03 &nbsp;｜&nbsp; 設計原則：最小有效分析，不追求完美覆蓋
+</footer>
+
+</body>
+</html>
