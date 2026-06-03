@@ -255,9 +255,61 @@
       .container { padding: 32px 20px; }
       .jtbd-grid { grid-template-columns: 1fr; }
     }
+
+    /* ── Top Navigation ── */
+    .topnav {
+      background: #1e3a8a;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      color: rgba(255,255,255,0.75);
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .nav-logo:hover { color: white; }
+    .nav-logo .logo-mark { font-size: 15px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
+    .nav-link {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+    .nav-link.active { background: rgba(255,255,255,0.15); color: white; font-weight: 600; }
+    @media (max-width: 600px) {
+      .topnav { padding: 10px 20px; height: auto; flex-wrap: wrap; gap: 8px; }
+      .nav-links { gap: 0; flex-wrap: wrap; }
+      .nav-link { padding: 4px 8px; font-size: 12px; }
+    }
   </style>
 </head>
 <body>
+
+<nav class="topnav">
+  <a href="index.html" class="nav-logo"><span class="logo-mark">◆</span> Linkju Docs</a>
+  <div class="nav-links">
+    <a href="mvp-research.html" class="nav-link">MVP 調研</a>
+    <a href="pm-bd-playbook.html" class="nav-link active">PM/BD 框架</a>
+    <a href="gtm-strategy.html" class="nav-link">GTM 策略</a>
+  </div>
+</nav>
 
 <header>
   <h1>Linkju PM/BD 分析框架</h1>
