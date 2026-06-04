@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Linkju 產品團隊 Dashboard — 虛擬產品團隊架構、Sprint 里程碑進度、交付物狀態，由 PM 持續更新。" />
+  <title>Linkju — 產品團隊 Dashboard</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --section-bg: #f9fafb;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --red-border: #fca5a5;
+      --yellow: #d97706;
+      --yellow-bg: #fffbeb;
+      --yellow-border: #fde68a;
+      --purple: #7c3aed;
+      --purple-bg: #f5f3ff;
+      --purple-border: #ddd6fe;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); font-size: 15px; line-height: 1.65; }
+
+    header { background: var(--accent); color: white; padding: 40px 48px 32px; }
+    header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+    header .sub { opacity: 0.8; margin-top: 6px; font-size: 14px; }
+    header .meta { margin-top: 16px; font-size: 12px; opacity: 0.65; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
+
+    section { margin-bottom: 60px; }
+    section > h2 { font-size: 20px; font-weight: 700; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 20px; }
+    h3 { font-size: 15px; font-weight: 700; margin: 22px 0 10px; }
+    p { margin-bottom: 12px; color: #374151; font-size: 14px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th { background: var(--accent); color: white; text-align: left; padding: 10px 14px; font-weight: 600; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: var(--section-bg); }
+
+    /* Role cards grid */
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .role-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .role-card .rc-icon { font-size: 28px; margin-bottom: 2px; }
+    .role-card .rc-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .role-card .rc-en {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: -4px;
+    }
+    .role-card .rc-resp {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.5;
+    }
+    .role-card .rc-status {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-top: 2px;
+    }
+    .role-card .rc-files {
+      margin-top: 6px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .role-card .rc-files .files-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .role-card .rc-files ul {
+      list-style: none;
+      padding: 0;
+    }
+    .role-card .rc-files ul li {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 2px 0 2px 14px;
+      position: relative;
+    }
+    .role-card .rc-files ul li::before {
+      content: "·";
+      position: absolute;
+      left: 4px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* Sprint milestone timeline */
+    .milestone-row-m0 td:first-child { border-left: 4px solid var(--accent); }
+    .milestone-row-m1 td:first-child { border-left: 4px solid var(--green); }
+    .milestone-row-m2 td:first-child { border-left: 4px solid var(--yellow); }
+    .milestone-row-m3 td:first-child { border-left: 4px solid var(--purple); }
+
+    .badge-notstarted {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+      white-space: nowrap;
+    }
+    .badge-inprogress {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--yellow-bg);
+      color: var(--yellow);
+      border: 1px solid var(--yellow-border);
+      white-space: nowrap;
+    }
+    .badge-complete {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+      white-space: nowrap;
+    }
+
+    /* Metrics grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .metric-item {
+      background: var(--section-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .metric-item .m-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    .metric-item .m-value { font-size: 20px; font-weight: 700; color: var(--green); }
+
+    /* Protocol section */
+    .protocol-block {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+    .protocol-block .pb-head {
+      background: var(--accent-light);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .protocol-block .pb-body {
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: #374151;
+      line-height: 1.7;
+    }
+    .protocol-block .pb-body ul {
+      list-style: none;
+      padding: 0;
+    }
+    .protocol-block .pb-body ul li {
+      padding: 4px 0 4px 18px;
+      position: relative;
+    }
+    .protocol-block .pb-body ul li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Next actions */
+    .action-list {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0;
+    }
+    .action-list li {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13.5px;
+      align-items: flex-start;
+    }
+    .action-list li:last-child { border-bottom: none; }
+    .action-list li .a-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .action-list li .a-role {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .action-list li .a-text { color: #374151; }
+
+    /* Highlight callout */
+    .highlight { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+    .highlight strong { color: var(--accent); }
+
+    footer { border-top: 1px solid var(--border); padding: 24px 48px; font-size: 12px; color: var(--muted); background: var(--section-bg); }
+
+    @media (max-width: 650px) {
+      header, footer { padding-left: 20px; padding-right: 20px; }
+      .container { padding: 32px 20px; }
+      .role-grid { grid-template-columns: 1fr; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ── Top Navigation ── */
+    .topnav {
+      background: #1e3a8a;
+      border: none;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      color: rgba(255,255,255,0.75);
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .nav-logo:hover { color: white; }
+    .nav-logo .logo-mark { font-size: 15px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
+    .nav-link {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+    .nav-link.active { background: rgba(255,255,255,0.15); color: white; font-weight: 600; }
+    @media (max-width: 650px) {
+      .topnav { padding: 10px 20px; height: auto; flex-wrap: wrap; gap: 8px; }
+      .nav-links { gap: 0; flex-wrap: wrap; }
+      .nav-link { padding: 4px 8px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html" class="nav-logo"><span class="logo-mark">◆</span> Linkju Docs</a>
+  <div class="nav-links">
+    <a href="mvp-research.html" class="nav-link">MVP 調研</a>
+    <a href="pm-bd-playbook.html" class="nav-link">PM/BD 框架</a>
+    <a href="gtm-strategy.html" class="nav-link">GTM 策略</a>
+    <a href="team.html" class="nav-link active">團隊</a>
+  </div>
+</nav>
+
+<header>
+  <h1>產品團隊 Dashboard</h1>
+  <div class="sub">MVP Phase · Sprint 0–3 · 8 Weeks</div>
+  <div class="meta">最後更新：2026-06-04 &nbsp;｜&nbsp; 維護人：PM</div>
+</header>
+
+<div class="container">
+
+  <!-- ────────────────────────────────────────────
+       1. Team Roster
+  ──────────────────────────────────────────── -->
+  <section>
+    <h2>團隊成員與角色</h2>
+    <div class="role-grid">
+
+      <div class="role-card">
+        <div class="rc-icon">📋</div>
+        <div class="rc-title">產品負責人</div>
+        <div class="rc-en">Product Owner</div>
+        <div class="rc-resp">定義用戶故事與驗收條件，確保功能符合住戶與管理員需求，並維護個資法合規性。</div>
+        <span class="rc-status">✅ Initial deliverables complete</span>
+        <div class="rc-files">
+          <div class="files-label">交付物</div>
+          <ul>
+            <li>docs/product/user-stories.md</li>
+            <li>docs/product/feature-flows.md</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="rc-icon">🎨</div>
+        <div class="rc-title">設計師</div>
+        <div class="rc-en">Designer</div>
+        <div class="rc-resp">建立設計系統與視覺規範，涵蓋色彩 token、字型、元件庫及行動端／Web 指引。</div>
+        <span class="rc-status">✅ Initial deliverables complete</span>
+        <div class="rc-files">
+          <div class="files-label">交付物</div>
+          <ul>
+            <li>docs/design/design-system.md</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="rc-icon">🔍</div>
+        <div class="rc-title">UX 研究員</div>
+        <div class="rc-en">UX Researcher</div>
+        <div class="rc-resp">規劃用戶研究計畫、可用性測試腳本，並主持試驗前管理員訪談，蒐集質性洞察。</div>
+        <span class="rc-status">✅ Initial deliverables complete</span>
+        <div class="rc-files">
+          <div class="files-label">交付物</div>
+          <ul>
+            <li>docs/research/ux-research-plan.md</li>
+            <li>docs/research/pilot-interview-guide.md</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="rc-icon">🧪</div>
+        <div class="rc-title">品質保證</div>
+        <div class="rc-en">QA Engineer</div>
+        <div class="rc-resp">制定測試計畫與 52 條測試案例，設定安全性與效能基準，並定義 Sprint 上線前的放行檢查清單。</div>
+        <span class="rc-status">✅ Initial deliverables complete</span>
+        <div class="rc-files">
+          <div class="files-label">交付物</div>
+          <ul>
+            <li>docs/qa/test-plan.md</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="rc-icon">🧭</div>
+        <div class="rc-title">產品經理</div>
+        <div class="rc-en">Project Manager</div>
+        <div class="rc-resp">協調跨職能協作流程，維護 RACI 矩陣、交付物追蹤及里程碑計畫，確保 8 週 MVP 時程順利推進。</div>
+        <span class="rc-status">✅ Initial deliverables complete</span>
+        <div class="rc-files">
+          <div class="files-label">交付物</div>
+          <ul>
+            <li>docs/team/team-charter.md</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────
+       2. Sprint Milestone Timeline
+  ──────────────────────────────────────────── -->
+  <section>
+    <h2>Sprint 里程碑時程</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>里程碑</th>
+            <th>週期</th>
+            <th>目標</th>
+            <th>狀態</th>
+            <th>範疇功能</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="milestone-row-m0">
+            <td><strong>M0 — Sprint 0</strong></td>
+            <td>W1–2</td>
+            <td>NestJS 模組骨架、JWT 認證、RBAC 角色控管</td>
+            <td><span class="badge-notstarted">🔴 Not Started</span></td>
+            <td>Auth 模組、住戶／管理員角色、JWT refresh token、基礎 CI/CD pipeline</td>
+          </tr>
+          <tr class="milestone-row-m1">
+            <td><strong>M1 — Sprint 1</strong></td>
+            <td>W3–4</td>
+            <td>公告系統完整上線</td>
+            <td><span class="badge-notstarted">🔴 Not Started</span></td>
+            <td>公告建立／發布、FCM 推播、已讀追蹤、管理員後台、公告列表與詳情頁</td>
+          </tr>
+          <tr class="milestone-row-m2">
+            <td><strong>M2 — Sprint 2</strong></td>
+            <td>W5–6</td>
+            <td>包裹通知 + 工單系統上線</td>
+            <td><span class="badge-notstarted">🔴 Not Started</span></td>
+            <td>包裹到件掃描、住戶 FCM 通知、取件確認、工單提交／指派／狀態追蹤、SLA 計時</td>
+          </tr>
+          <tr class="milestone-row-m3">
+            <td><strong>M3 — Sprint 3</strong></td>
+            <td>W7–8</td>
+            <td>優化打磨 + 試驗社區正式上線</td>
+            <td><span class="badge-notstarted">🔴 Not Started</span></td>
+            <td>UX 可用性修正、效能調校、端對端測試通過、試驗社區部署、管理員訓練與入職</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight">
+      <strong>目前狀態：</strong>所有里程碑均尚未啟動。開發團隊預計於 Sprint 0 正式展開，目前處於交付物就緒、等待開發啟動的階段。
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────
+       3. Deliverables Status
+  ──────────────────────────────────────────── -->
+  <section>
+    <h2>交付物狀態</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>文件名稱</th>
+            <th>負責角色</th>
+            <th>狀態</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>user-stories.md</strong></td>
+            <td>產品負責人 (PO)</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>21 條用戶故事（US-101–US-405），涵蓋 4 個 P0 功能，含驗收條件與個資法合規備註</td>
+          </tr>
+          <tr>
+            <td><strong>feature-flows.md</strong></td>
+            <td>產品負責人 (PO)</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>20 條功能流程、API 端點定義、FCM 觸發條件、PII 稽核事件及 30 個 API 端點附錄</td>
+          </tr>
+          <tr>
+            <td><strong>design-system.md</strong></td>
+            <td>設計師</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>890 行設計系統：色彩 token、Noto Sans TC 字型、8 個元件規格、圖示集、動效、行動端與 Web 指引</td>
+          </tr>
+          <tr>
+            <td><strong>ux-research-plan.md</strong></td>
+            <td>UX 研究員</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>4 階段研究計畫、繁中可用性測試腳本、7 個風險排名、成效指標框架</td>
+          </tr>
+          <tr>
+            <td><strong>pilot-interview-guide.md</strong></td>
+            <td>UX 研究員</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>試驗前管理員訪談指南（20 題）+ 試驗後管理員/住戶指南，附個資法訪談引導備註</td>
+          </tr>
+          <tr>
+            <td><strong>test-plan.md</strong></td>
+            <td>QA 工程師</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>52 條測試案例（TC-AUTH 至 TC-MNT）、安全性測試、效能基準、上線前放行檢查清單</td>
+          </tr>
+          <tr>
+            <td><strong>team-charter.md</strong></td>
+            <td>產品經理 (PM)</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>RACI 矩陣、協作流程、交付物交接鏈、里程碑時程表</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────
+       4. Collaboration Protocol
+  ──────────────────────────────────────────── -->
+  <section>
+    <h2>協作流程規範</h2>
+
+    <div class="protocol-block">
+      <div class="pb-head">交付物交接鏈（Handoff Chain）</div>
+      <div class="pb-body">
+        <ul>
+          <li><strong>PO → Designer：</strong>用戶故事與功能流程完成後，設計師進行 UX 可行性審查，確認視覺設計方向與元件需求。</li>
+          <li><strong>PO → QA（Left-Shift）：</strong>驗收條件撰寫後立即交 QA 審查，測試案例在開發啟動前完成，避免後期補測。</li>
+          <li><strong>UX 研究員（平行軌道）：</strong>研究計畫與訪談指南獨立進行，不阻塞開發主軸，但研究洞察需在 Sprint 3 前完成匯入。</li>
+          <li><strong>PM → 全員：</strong>每個 Sprint 結束前召開同步會議，確認下一 Sprint 範疇與優先順序。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="protocol-block">
+      <div class="pb-head">Sprint 啟動前放行閘（Review Gates）</div>
+      <div class="pb-body">
+        <ul>
+          <li><strong>Sprint 0 啟動前：</strong>PO 用戶故事（US-101–US-405）經 Designer 與 QA 雙方確認無疑義。</li>
+          <li><strong>Sprint 1 啟動前：</strong>公告模組 API 設計通過 QA 審查，設計稿（Wireframe）經 PO 簽核。</li>
+          <li><strong>Sprint 2 啟動前：</strong>包裹通知與工單 UX 流程通過 UX Researcher 可用性評估，FCM 推播設計符合個資法規範。</li>
+          <li><strong>Sprint 3（試驗上線）前：</strong>所有 P0 測試案例通過（Go/No-Go 檢查清單），試驗社區管理員完成入職訓練。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="protocol-block">
+      <div class="pb-head">非同步優先溝通原則（Async-First）</div>
+      <div class="pb-body">
+        <ul>
+          <li>所有決策、討論與設計變更均以書面形式記錄於對應文件，避免口頭共識消失。</li>
+          <li>技術問題優先開 GitHub Issue，設計問題優先在 Figma 留言，產品問題記錄於 user-stories.md 或 feature-flows.md。</li>
+          <li>即時同步會議僅用於跨功能決策、Sprint 規劃及回顧，每次不超過 60 分鐘。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────
+       5. Key Metrics
+  ──────────────────────────────────────────── -->
+  <section>
+    <h2>MVP 成功指標</h2>
+    <p>以下 6 項指標為試驗社區上線後的 4 週評估基準，達標即具備擴大部署條件。</p>
+    <div class="metric-grid">
+      <div class="metric-item">
+        <div class="m-label">住戶週活躍率</div>
+        <div class="m-value">≥ 40%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">包裹通知開啟率</div>
+        <div class="m-value">≥ 70%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">公告 48h 閱讀率</div>
+        <div class="m-value">≥ 60%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">工單平均回應時間</div>
+        <div class="m-value">&lt; 24h</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">住戶 4 週留存率</div>
+        <div class="m-value">≥ 25%</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">管理員/主委滿意度</div>
+        <div class="m-value">≥ 7/10</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────
+       6. Next Actions
+  ──────────────────────────────────────────── -->
+  <section>
+    <h2>下一步行動</h2>
+    <ul class="action-list">
+      <li>
+        <span class="a-icon">⚙️</span>
+        <div>
+          <span class="a-role">工程團隊</span>
+          <span class="a-text">啟動 Sprint 0 開發：建立 NestJS 模組骨架、實作 JWT 認證與 RBAC 角色控管，完成基礎 CI/CD pipeline 設定。</span>
+        </div>
+      </li>
+      <li>
+        <span class="a-icon">🎨</span>
+        <div>
+          <span class="a-role">設計師</span>
+          <span class="a-text">審查 PO 用戶故事的 UX 可行性，確認設計系統元件能完整覆蓋 US-101–US-405 所需的介面需求，並輸出初版 Wireframe。</span>
+        </div>
+      </li>
+      <li>
+        <span class="a-icon">🧪</span>
+        <div>
+          <span class="a-role">QA 工程師</span>
+          <span class="a-text">審查 PO 驗收條件（Shift-Left QA），確認 52 條測試案例與用戶故事逐一對應，在開發啟動前完成測試計畫簽核。</span>
+        </div>
+      </li>
+      <li>
+        <span class="a-icon">🔍</span>
+        <div>
+          <span class="a-role">UX 研究員</span>
+          <span class="a-text">排定試驗前管理員訪談，招募 3–5 位目標社區管理員，依照 pilot-interview-guide.md 執行前期質性研究，洞察需於 Sprint 1 結束前完成彙整。</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+</div>
+
+<footer>
+  Linkju &nbsp;｜&nbsp; <a href="https://github.com/PigeonPacket" style="color: inherit;">PigeonPacket</a> &nbsp;｜&nbsp; 文件更新頻率：每次重大調研或里程碑後
+</footer>
+
+</body>
+</html>
