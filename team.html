@@ -318,7 +318,7 @@
 <header>
   <h1>產品團隊 Dashboard</h1>
   <div class="sub">MVP Phase · Sprint 0–3 · 8 Weeks</div>
-  <div class="meta">最後更新：2026-06-04 &nbsp;｜&nbsp; 維護人：PM</div>
+  <div class="meta">最後更新：2026-06-04（Kickoff 討論完成）&nbsp;｜&nbsp; 維護人：PM</div>
 </header>
 
 <div class="container">
@@ -422,12 +422,19 @@
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td><strong>Kickoff 討論</strong></td>
+            <td>2026-06-04</td>
+            <td>跨職能審查：PO、Designer、UX 研究員、QA 互審交付物</td>
+            <td><span class="badge-complete">✅ Complete</span></td>
+            <td>5 項跨團隊議題、4 項 Blocker、6 項待決事項、28 條 Week 1 行動項目</td>
+          </tr>
           <tr class="milestone-row-m0">
             <td><strong>M0 — Sprint 0</strong></td>
             <td>W1–2</td>
             <td>NestJS 模組骨架、JWT 認證、RBAC 角色控管</td>
-            <td><span class="badge-notstarted">🔴 Not Started</span></td>
-            <td>Auth 模組、住戶／管理員角色、JWT refresh token、基礎 CI/CD pipeline</td>
+            <td><span class="badge-inprogress">🟡 Ready to Start</span></td>
+            <td>Auth 模組、住戶／管理員角色、JWT refresh token、基礎 CI/CD pipeline（Blocker B-3 解除後正式啟動）</td>
           </tr>
           <tr class="milestone-row-m1">
             <td><strong>M1 — Sprint 1</strong></td>
@@ -454,7 +461,272 @@
       </table>
     </div>
     <div class="highlight">
-      <strong>目前狀態：</strong>所有里程碑均尚未啟動。開發團隊預計於 Sprint 0 正式展開，目前處於交付物就緒、等待開發啟動的階段。
+      <strong>Kickoff 完成 (2026-06-04)：</strong>Sprint 0 已通過 GO 判定（附條件）。工程可於 Week 1 Day 1 開始基礎設施搭建；Sprint 1 規劃確認需等 Week 1 四項 Blocker 解除，由 PM 於 Week 1 結束前簽核放行。
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────
+       2b. Kickoff Findings
+  ──────────────────────────────────────────── -->
+  <section>
+    <h2>Kickoff 討論結果摘要</h2>
+
+    <div class="metric-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 20px;">
+      <div class="metric-item">
+        <div class="m-label">跨團隊議題</div>
+        <div class="m-value" style="color: var(--yellow);">5 項</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">Sprint 1 前必解 Blocker</div>
+        <div class="m-value" style="color: var(--red);">4 項</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">待決產品決策</div>
+        <div class="m-value" style="color: var(--yellow);">6 項</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-label">Sprint 0 判定</div>
+        <div class="m-value" style="color: var(--green); font-size: 16px;">GO ✓</div>
+      </div>
+    </div>
+
+    <div class="protocol-block">
+      <div class="pb-head">最高優先跨團隊議題（2+ 角色獨立提出）</div>
+      <div class="pb-body">
+        <ul>
+          <li><strong>CI-1 推播授權前置說明畫面缺失（PO + Designer + UX 研究員）：</strong>US-402 無任何驗收條件規範 iOS/Android 系統授權彈窗前的使用者說明畫面；直接影響試驗目標 ≥75% 推播授權率。</li>
+          <li><strong>CI-2 QR Code 入住流程未規格化（PO + QA）：</strong>Trial 2 上線驗收清單要求 QR Code 入住測試，但 US-401/US-402 僅涵蓋 SMS/Email 連結，QR 掃描→App Store→深層連結還原流程完全未規格化。</li>
+          <li><strong>CI-3 管理員端 mobile vs. web-only 架構不明（PO + Designer + QA）：</strong>US-306、design-system.md Section 8.3 與 Feature Flow 4-B 對管理員是否使用 mobile app 存在矛盾，工程無法確定推播基礎設施範圍。</li>
+          <li><strong>CI-4 工單 category 欄位衝突（PO + QA）：</strong>US-301 無 category 欄位，TC-MNT-01 卻送出 <code>"category":"ELECTRICAL"</code>；同一功能，工程與 QA 規格相互矛盾。</li>
+          <li><strong>CI-5 住戶首次使用空狀態未設計（PO + Designer + UX 研究員）：</strong>US-402 AC7 將新住戶導入 Home Tab，但空 Home Tab 既無 AC 規格也無設計稿；這是住戶 72 小時內刪除 App 的主要風險點。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="protocol-block">
+      <div class="pb-head">Sprint 0 GO 條件（Week 1 結束前需完成）</div>
+      <div class="pb-body">
+        <ul>
+          <li><strong>B-1：</strong>PO 將推播授權前置說明畫面 AC 寫入 US-402；Designer 交付該畫面設計稿（Day 3 前）。</li>
+          <li><strong>B-2：</strong>QA 重寫 TC-MNT-01（修正 FCM 斷言 + 移除 category 欄位）；修正 TC-PKG-01（移除 tracking_number）— Day 1 完成。</li>
+          <li><strong>B-3：</strong>QA 確認 Docker Compose、CI Pipeline、Seed Script、FakeFcmAdapter、.env.test 均已存在且可正常執行 — Sprint 0 Day 1 開始前完成。</li>
+          <li><strong>B-4：</strong>PO 決定已讀回執姓名遮蔽格式（建議：<code>姓**</code>），更新 US-204 AC2 與 Flow 2-D；QA 對齊 TC-ANN-05/TC-ANN-10 — Day 3 前完成。</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Week 1 行動項目</h3>
+    <p style="font-size: 13px; color: var(--muted); margin-bottom: 10px;">完整討論記錄與說明：<a href="docs/team/kickoff-summary.md" style="color: var(--accent);">完整 Kickoff 討論記錄</a></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>負責人</th>
+            <th>行動項目</th>
+            <th>交付物</th>
+            <th>截止</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>PO</td>
+            <td>修正 US-402 AC3：密碼政策統一為「至少 8 字元 + 1 英文字母 + 1 數字」</td>
+            <td>user-stories.md</td>
+            <td>Day 1</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>PO</td>
+            <td>新增 US-402 推播授權前置說明畫面 AC（含拒絕授權後的設定還原路徑）</td>
+            <td>user-stories.md</td>
+            <td>Day 2</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>PO</td>
+            <td>決定 D-3：更新 US-306，明確宣告管理員 Sprint 1 採 web-only</td>
+            <td>user-stories.md</td>
+            <td>Day 2</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>PO</td>
+            <td>決定 D-4：移除 US-201 AC2 "HTML or"，確認採 content_json TipTap JSON</td>
+            <td>user-stories.md</td>
+            <td>Day 2</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>PO</td>
+            <td>解決 B-4：更新 US-204 AC2 為遮蔽格式；更新 feature-flows.md Flow 2-D</td>
+            <td>user-stories.md + feature-flows.md</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>PO</td>
+            <td>決定 D-1：確認 MVP 無 category 欄位；通知 QA 修正 TC-MNT-01</td>
+            <td>user-stories.md 決策記錄</td>
+            <td>Day 2</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>PO</td>
+            <td>新增 US-203/US-103 FTUE 空狀態 AC（住戶首次進入 Home Tab 的畫面規格）</td>
+            <td>user-stories.md</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>PO</td>
+            <td>新增 US-101 自由輸入 fallback AC（住戶搜尋 0 結果時可繼續登記）</td>
+            <td>user-stories.md</td>
+            <td>Day 4</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>PO</td>
+            <td>修正模糊 AC：US-104 optimistic update 明確化、US-304 AC7 48h 起算基準</td>
+            <td>user-stories.md</td>
+            <td>Day 4</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>Designer</td>
+            <td>交付推播授權前置說明畫面設計稿（含拒絕後設定還原畫面）</td>
+            <td>docs/design/ 或 Figma</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>Designer</td>
+            <td>交付住戶 FTUE 空 Home Tab 畫面設計稿</td>
+            <td>docs/design/</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>Designer</td>
+            <td>交付 Combobox/Typeahead 元件規格（管理員 web 住戶搜尋，含 IME debounce）</td>
+            <td>設計系統更新</td>
+            <td>Day 4</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>Designer</td>
+            <td>交付 Toggle/Switch 元件規格（US-404 通知偏好，含 disabled-locked 狀態）</td>
+            <td>設計系統更新</td>
+            <td>Day 4</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td>Designer</td>
+            <td>確認空狀態「插圖」是否為 Phosphor 圖示或自訂 SVG；若自訂，確認交付 Sprint</td>
+            <td>design-system.md 決策</td>
+            <td>Day 2</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td>Designer</td>
+            <td>確認所有確認對話框按鈕 variant（US-101/104/306/403）：primary/secondary/danger</td>
+            <td>design-system.md 或 AC</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td>QA</td>
+            <td>重寫 TC-MNT-01：修正 FCM 斷言（應有推播）+ 移除 category 欄位</td>
+            <td>test-plan.md</td>
+            <td>Day 1</td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td>QA</td>
+            <td>修正 TC-PKG-01：移除 tracking_number 欄位</td>
+            <td>test-plan.md</td>
+            <td>Day 1</td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td>QA</td>
+            <td>確認基礎設施 Checklist（B-3）：Docker Compose、CI、Seed、FakeFcmAdapter、.env.test</td>
+            <td>書面確認（PR 或 Slack）</td>
+            <td>Day 1</td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td>QA</td>
+            <td>建立 BuildingGuard 測試檔 test/security/building-guard.spec.ts（TC-BG-01 至 TC-BG-05）</td>
+            <td>新測試檔案</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td>QA</td>
+            <td>對齊 TC-ANN-05/TC-ANN-10 至 B-4 決策（姓名遮蔽格式）</td>
+            <td>test-plan.md</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td>QA</td>
+            <td>重寫 TC-ANN-01：更新 request body 為 content_json TipTap JSON 格式</td>
+            <td>test-plan.md</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td>QA</td>
+            <td>新增 RBAC/入住流程骨架測試案例（TC-AUTH-XX：invite、invite-info、register）</td>
+            <td>test-plan.md</td>
+            <td>Day 4</td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td>UX 研究員</td>
+            <td>完成 PTT/Dcard 搜尋：識別 2–3 個 Win-back 社區聯絡人</td>
+            <td>搜尋摘要文件</td>
+            <td>Day 5</td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td>UX 研究員</td>
+            <td>起草 Win-back 初次接觸訊息稿（待 PO 審核後發送）</td>
+            <td>草稿供 PO 審核</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td>UX 研究員</td>
+            <td>起草研究資料處理 SOP（加密儲存、PII 錄音刪除協議、知情同意書要求）</td>
+            <td>docs/research/data-handling-sop.md</td>
+            <td>Day 5</td>
+          </tr>
+          <tr>
+            <td>26</td>
+            <td>UX 研究員</td>
+            <td>確認 Greenfield 物業公司開發責任歸屬（PO 或 Founder），設定 Sprint 0 結束目標（5 封外發、2 個回應）</td>
+            <td>確認責任歸屬記錄</td>
+            <td>Day 2</td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td>UX 研究員</td>
+            <td>準備研究參與者說明文件，供 PO 納入 Greenfield 物業公司外發信</td>
+            <td>參與者負擔說明文件</td>
+            <td>Day 3</td>
+          </tr>
+          <tr>
+            <td>28</td>
+            <td>PM</td>
+            <td>Week 1 結束前確認所有 GO 條件已完成，簽核 Sprint 1 規劃放行</td>
+            <td>PM 簽核記錄</td>
+            <td>Day 5</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -601,34 +873,41 @@
        6. Next Actions
   ──────────────────────────────────────────── -->
   <section>
-    <h2>下一步行動</h2>
+    <h2>下一步行動（Kickoff 後 Week 1）</h2>
     <ul class="action-list">
       <li>
         <span class="a-icon">⚙️</span>
         <div>
-          <span class="a-role">工程團隊</span>
-          <span class="a-text">啟動 Sprint 0 開發：建立 NestJS 模組骨架、實作 JWT 認證與 RBAC 角色控管，完成基礎 CI/CD pipeline 設定。</span>
+          <span class="a-role">QA 工程師（Day 1 — 最優先）</span>
+          <span class="a-text">確認基礎設施 Checklist（B-3）：Docker Compose、CI Pipeline、Seed Script、FakeFcmAdapter、.env.test 均存在且正常運行；同步重寫 TC-MNT-01（FCM 斷言 + 移除 category）與 TC-PKG-01（移除 tracking_number）。</span>
+        </div>
+      </li>
+      <li>
+        <span class="a-icon">📋</span>
+        <div>
+          <span class="a-role">產品負責人（Day 1–2）</span>
+          <span class="a-text">修正密碼政策（US-402 AC3）、新增推播授權前置說明 AC、決定管理員 web-only（D-3）、確認公告格式 content_json（D-4）、決定無 category 欄位（D-1）。</span>
         </div>
       </li>
       <li>
         <span class="a-icon">🎨</span>
         <div>
-          <span class="a-role">設計師</span>
-          <span class="a-text">審查 PO 用戶故事的 UX 可行性，確認設計系統元件能完整覆蓋 US-101–US-405 所需的介面需求，並輸出初版 Wireframe。</span>
-        </div>
-      </li>
-      <li>
-        <span class="a-icon">🧪</span>
-        <div>
-          <span class="a-role">QA 工程師</span>
-          <span class="a-text">審查 PO 驗收條件（Shift-Left QA），確認 52 條測試案例與用戶故事逐一對應，在開發啟動前完成測試計畫簽核。</span>
+          <span class="a-role">設計師（Day 3）</span>
+          <span class="a-text">交付推播授權前置說明畫面設計稿（含拒絕後設定還原畫面）與住戶 FTUE 空 Home Tab 設計稿——這兩張畫面是 Sprint 1 住戶入住流程工程開發的前置條件。</span>
         </div>
       </li>
       <li>
         <span class="a-icon">🔍</span>
         <div>
-          <span class="a-role">UX 研究員</span>
-          <span class="a-text">排定試驗前管理員訪談，招募 3–5 位目標社區管理員，依照 pilot-interview-guide.md 執行前期質性研究，洞察需於 Sprint 1 結束前完成彙整。</span>
+          <span class="a-role">UX 研究員（Day 2–5）</span>
+          <span class="a-text">確認 Greenfield 物業公司開發責任歸屬；完成 PTT/Dcard Win-back 社區搜尋（目標：識別 2–3 個可接觸的聯絡人）；起草研究資料處理 SOP（含知情同意書、PII 錄音刪除協議）。</span>
+        </div>
+      </li>
+      <li>
+        <span class="a-icon">🧭</span>
+        <div>
+          <span class="a-role">產品經理（Day 5）</span>
+          <span class="a-text">確認所有 Kickoff GO 條件（B-1 至 B-4）已解除；簽核 Sprint 1 規劃放行；更新 team.html 里程碑狀態。</span>
         </div>
       </li>
     </ul>
