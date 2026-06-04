@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Linkju 系統架構設計 (SASD) — Backend + Frontend MVP Phase 技術設計文件" />
+  <title>Linkju — 系統架構設計 (SASD)</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --section-bg: #f9fafb;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+      --purple: #7c3aed;
+      --purple-bg: #f5f3ff;
+      --purple-border: #ddd6fe;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); font-size: 15px; line-height: 1.65; }
+
+    header { background: var(--accent); color: white; padding: 40px 48px 32px; }
+    header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+    header .sub { opacity: 0.8; margin-top: 6px; font-size: 14px; }
+    header .meta { margin-top: 16px; font-size: 12px; opacity: 0.65; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
+
+    section { margin-bottom: 60px; }
+    section > h2 { font-size: 20px; font-weight: 700; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 20px; }
+    h3 { font-size: 15px; font-weight: 700; margin: 22px 0 10px; }
+    p { margin-bottom: 12px; color: #374151; font-size: 14px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th { background: var(--accent); color: white; text-align: left; padding: 10px 14px; font-weight: 600; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: var(--section-bg); }
+    code { font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace; font-size: 12px; background: #f3f4f6; padding: 1px 5px; border-radius: 4px; color: #374151; }
+
+    /* Overview cards */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .tech-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      background: white;
+    }
+    .tech-card .tc-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .tech-card .tc-icon { font-size: 24px; }
+    .tech-card .tc-title { font-size: 15px; font-weight: 700; }
+    .tech-card .tc-subtitle { font-size: 12px; color: var(--muted); }
+    .tech-card ul { list-style: none; padding: 0; }
+    .tech-card ul li {
+      font-size: 13px;
+      color: #374151;
+      padding: 5px 0 5px 16px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .tech-card ul li:last-child { border-bottom: none; }
+    .tech-card ul li::before {
+      content: "·";
+      position: absolute;
+      left: 4px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .tech-card ul li strong { color: var(--accent); }
+
+    /* System context diagram */
+    .diagram-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 24px 28px;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    .diagram-block pre {
+      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    /* Decision cards */
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .decision-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      background: white;
+    }
+    .decision-card .dc-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .decision-card .dc-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .decision-card .dc-rationale {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.6;
+    }
+
+    /* Sprint scope */
+    .sprint-list {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0;
+    }
+    .sprint-list li {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13.5px;
+      align-items: flex-start;
+    }
+    .sprint-list li:last-child { border-bottom: none; }
+    .sprint-list .s-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+      padding: 2px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .sprint-list .s-text { color: #374151; line-height: 1.55; }
+
+    /* Highlight callout */
+    .highlight { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+    .highlight strong { color: var(--accent); }
+
+    footer { border-top: 1px solid var(--border); padding: 24px 48px; font-size: 12px; color: var(--muted); background: var(--section-bg); }
+
+    @media (max-width: 650px) {
+      header, footer { padding-left: 20px; padding-right: 20px; }
+      .container { padding: 32px 20px; }
+      .tech-grid, .decision-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Top Navigation ── */
+    .topnav {
+      background: #1e3a8a;
+      border: none;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      color: rgba(255,255,255,0.75);
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .nav-logo:hover { color: white; }
+    .nav-logo .logo-mark { font-size: 15px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
+    .nav-link {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+    .nav-link.active { background: rgba(255,255,255,0.15); color: white; font-weight: 600; }
+    @media (max-width: 650px) {
+      .topnav { padding: 10px 20px; height: auto; flex-wrap: wrap; gap: 8px; }
+      .nav-links { gap: 0; flex-wrap: wrap; }
+      .nav-link { padding: 4px 8px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html" class="nav-logo"><span class="logo-mark">◆</span> Linkju Docs</a>
+  <div class="nav-links">
+    <a href="mvp-research.html" class="nav-link">MVP 調研</a>
+    <a href="pm-bd-playbook.html" class="nav-link">PM/BD 框架</a>
+    <a href="gtm-strategy.html" class="nav-link">GTM 策略</a>
+    <a href="team.html" class="nav-link">團隊</a>
+    <a href="architecture.html" class="nav-link active">架構設計</a>
+  </div>
+</nav>
+
+<header>
+  <h1>系統架構設計 (SASD)</h1>
+  <div class="sub">MVP Phase · Backend + Frontend · 2026-06-04</div>
+  <div class="meta">最後更新：2026-06-04（Sprint 0 工程參考版）&nbsp;｜&nbsp; 維護人：Lead Architect</div>
+</header>
+
+<div class="container">
+
+  <!-- ──────────────────────────────────────────────
+       1. Architecture Overview
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>架構概覽</h2>
+    <p>Linkju MVP 由兩個獨立服務組成：後端 REST API（<strong>linkju-api</strong>）與管理員 Web 儀表板（<strong>linkju-web</strong>）。住戶端使用原生行動 App（iOS/Android）；管理員與主委使用 Web Dashboard（最低 1024px，桌面優先）。</p>
+    <div class="tech-grid">
+
+      <div class="tech-card">
+        <div class="tc-header">
+          <div class="tc-icon">⚙️</div>
+          <div>
+            <div class="tc-title">Backend — linkju-api</div>
+            <div class="tc-subtitle">NestJS · Port 3000</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>框架：</strong>NestJS 10 + TypeORM 0.3</li>
+          <li><strong>資料庫：</strong>PostgreSQL 16（主要持久化層）</li>
+          <li><strong>快取 / 黑名單：</strong>Redis 7（ioredis）</li>
+          <li><strong>推播：</strong>Firebase Cloud Messaging (FCM)，最大 500 tokens/批次</li>
+          <li><strong>檔案儲存：</strong>AWS S3 / Cloudflare R2（Presigned URL）</li>
+          <li><strong>排程：</strong>@nestjs/schedule — 公告定時發布（每分鐘掃描）</li>
+          <li><strong>驗證：</strong>passport-jwt + passport-local + class-validator</li>
+        </ul>
+      </div>
+
+      <div class="tech-card">
+        <div class="tc-header">
+          <div class="tc-icon">🖥️</div>
+          <div>
+            <div class="tc-title">Frontend — linkju-web</div>
+            <div class="tc-subtitle">Next.js 14 App Router · Manager &amp; Admin Dashboard</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>框架：</strong>Next.js 14（App Router）+ TypeScript</li>
+          <li><strong>樣式：</strong>Tailwind CSS（設計系統 token）</li>
+          <li><strong>伺服器狀態：</strong>SWR（快取、去重、polling）</li>
+          <li><strong>表單狀態：</strong>react-hook-form（無受控重渲染）</li>
+          <li><strong>編輯器：</strong>TipTap（公告富文字，lazy-loaded）</li>
+          <li><strong>HTTP 客戶端：</strong>Axios + 401 refresh 攔截器（含並發鎖）</li>
+          <li><strong>圖示庫：</strong>@phosphor-icons/react（按需 import）</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       2. System Context
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>系統邊界圖（System Context）</h2>
+    <p>三類角色透過 JWT + REST 與 API 互動；API 對外依賴 PostgreSQL、Redis、FCM 和 S3/R2 四個基礎設施。</p>
+    <div class="diagram-block">
+      <pre>
+╔══════════════════════════════════════════════════════════════════╗
+║                  SYSTEM BOUNDARY: linkju-api                     ║
+║                                                                  ║
+║  ┌─────────────┐  JWT + REST  ┌─────────────────────────────┐   ║
+║  │  住戶        │◄────────────►│        Linkju API           │   ║
+║  │  (Mobile    │  packages,   │      (NestJS, port 3000)    │   ║
+║  │   iOS/Andr) │  ann, maint  │                             │   ║
+║  └─────────────┘              │  Modules:                   │   ║
+║                               │  Auth · Buildings · Users   │   ║
+║  ┌─────────────┐  JWT + REST  │  Packages · Announcements   │   ║
+║  │  管理員      │◄────────────►│  Maintenance · Notifications│   ║
+║  │  (Web       │  packages,   │  Storage · Common           │   ║
+║  │  Dashboard) │  ann, maint  └─────────────────────────────┘   ║
+║  └─────────────┘                          │                      ║
+║                                           │                      ║
+║  ┌─────────────┐  JWT + REST              │                      ║
+║  │  主委        │◄────────────────────────►│                      ║
+║  │  (Web       │  audit, user mgmt        │                      ║
+║  │  Dashboard) │                          │                      ║
+║  └─────────────┘                          │                      ║
+╚══════════════════════════════════════════│══════════════════════╝
+                                           │
+         ┌─────────────────────────────────┼─────────────────────┐
+         │                                 │                     │
+         ▼                                 ▼                     ▼
+┌─────────────────┐             ┌──────────────────┐  ┌──────────────────┐
+│  PostgreSQL 16  │             │    Redis 7       │  │   AWS S3 / R2    │
+│  (主要資料)     │             │  JWT 黑名單       │  │  Presigned URLs  │
+│  users, pkgs,   │             │  Refresh tokens  │  │  (GET 15min,     │
+│  ann, work_orders│            │  Rate-limit      │  │   PUT 5min)      │
+│  audit_logs     │             │  counters        │  └──────────────────┘
+└─────────────────┘             └──────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│  FCM (Firebase) │  sendEachForMulticast（最大 500 tokens/批次）
+│  → iOS/Android  │  FakeFcmAdapter 供測試環境使用
+│  → Web (VAPID)  │
+└─────────────────┘
+      </pre>
+    </div>
+    <div class="highlight">
+      <strong>設計原則：</strong>二進位檔案（照片）永遠不經過 API。客戶端直接向 S3/R2 PUT，API 僅生成 Presigned URL；building_id 綁定在 S3 key 路徑中，確保多租戶隔離。
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       3. Database Schema
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>資料庫 Schema（11 張資料表）</h2>
+    <p>所有 PK 使用 <code>uuid</code>（gen_random_uuid()）。時間欄位使用 <code>timestamptz</code>。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>資料表</th>
+            <th>用途</th>
+            <th>關鍵欄位</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>buildings</code></td>
+            <td>社區（租戶）基本資訊，MVP 為單一社區</td>
+            <td><code>id</code>, <code>name</code>, <code>address</code>, <code>unit_count</code>, <code>settings</code> (jsonb)</td>
+          </tr>
+          <tr>
+            <td><code>users</code></td>
+            <td>所有用戶（住戶、管理員、主委），RBAC 角色欄位</td>
+            <td><code>building_id</code>, <code>email</code>, <code>role</code> (ENUM), <code>unit_number</code>, <code>status</code> (ENUM), <code>notification_prefs</code> (jsonb), <code>force_password_change</code></td>
+          </tr>
+          <tr>
+            <td><code>push_tokens</code></td>
+            <td>FCM 推播 token，每用戶每平台唯一</td>
+            <td><code>user_id</code>, <code>token</code>, <code>platform</code> (ios/android/web)；UNIQUE(user_id, platform)</td>
+          </tr>
+          <tr>
+            <td><code>refresh_tokens</code></td>
+            <td>JWT Refresh Token 輪替鏈，支援 family 攻擊偵測</td>
+            <td><code>user_id</code>, <code>token_hash</code>, <code>family_id</code>, <code>expires_at</code>, <code>revoked_at</code></td>
+          </tr>
+          <tr>
+            <td><code>packages</code></td>
+            <td>包裹到件記錄，含通知狀態追蹤</td>
+            <td><code>building_id</code>, <code>resident_id</code>, <code>unit_number</code> (去正規化), <code>carrier</code>, <code>status</code> (PENDING/COLLECTED), <code>notified_at</code>, <code>photo_s3_key</code></td>
+          </tr>
+          <tr>
+            <td><code>announcements</code></td>
+            <td>公告內容，支援草稿 / 排程 / 已發布 / 封存四種狀態</td>
+            <td><code>building_id</code>, <code>content_json</code> (TipTap jsonb), <code>priority</code> (NORMAL/URGENT), <code>status</code> (ENUM), <code>scheduled_at</code>, <code>published_at</code>, <code>last_reminded_at</code></td>
+          </tr>
+          <tr>
+            <td><code>announcement_reads</code></td>
+            <td>已讀回執，防止重複寫入</td>
+            <td><code>announcement_id</code>, <code>user_id</code>, <code>read_at</code>；UNIQUE(announcement_id, user_id)，INSERT ON CONFLICT DO NOTHING</td>
+          </tr>
+          <tr>
+            <td><code>work_orders</code></td>
+            <td>維修工單主表，狀態機流轉</td>
+            <td><code>building_id</code>, <code>requester_id</code>, <code>unit_number</code> (去正規化), <code>status</code> (OPEN→ASSIGNED→IN_PROGRESS→RESOLVED→CLOSED), <code>priority</code>, <code>assignee</code>, <code>resolved_at</code></td>
+          </tr>
+          <tr>
+            <td><code>work_order_photos</code></td>
+            <td>工單附圖（S3 key），Cascade 刪除</td>
+            <td><code>work_order_id</code>, <code>s3_key</code>, <code>uploaded_by</code></td>
+          </tr>
+          <tr>
+            <td><code>work_order_status_history</code></td>
+            <td>工單狀態變更稽核軌跡，僅新增（Append-only）</td>
+            <td><code>work_order_id</code>, <code>status</code>, <code>changed_by</code>, <code>comment</code>（RESOLVED 必填）, <code>changed_at</code></td>
+          </tr>
+          <tr>
+            <td><code>pii_audit_log</code></td>
+            <td>個資法合規稽核日誌，5 年保留，僅新增</td>
+            <td><code>actor_id</code>, <code>action</code>（USER_SEARCH / READ_RECEIPT_VIEW / PACKAGE_LIST_VIEW 等 11 種）, <code>resource_type</code>, <code>resource_id</code>, <code>ip_address</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px; color: var(--muted);">另有兩張輔助資料表未列入上方計數：<code>invite_tokens</code>（7 天有效期邀請連結）、<code>password_reset_tokens</code>（1 小時有效期，單次使用）。</p>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       4. API Surface
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>API Surface（主要端點）</h2>
+    <p>完整端點共 37 個。以下列出各模組最關鍵的端點（約 20 個），說明請求/回應語義。所有需驗證的端點均帶 <code>[JWT]</code>；涉及多租戶隔離的帶 <code>[BG]</code>（BuildingGuard）。</p>
+
+    <h3>Auth 模組</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>方法</th><th>路徑</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/auth/login</code></td>
+            <td>登入；bcrypt 驗證；回傳 JWT accessToken（15 分鐘）+ refreshToken（30 天）</td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/auth/refresh</code></td>
+            <td>Refresh Token 輪替；舊 token 立即作廢；重複使用觸發 family 全數撤銷</td>
+          </tr>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/auth/me</code> <code>[JWT]</code></td>
+            <td>取得當前用戶 profile（含 notificationPrefs）</td>
+          </tr>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/auth/invite-info</code></td>
+            <td>驗證邀請 token 有效性；回傳用戶名稱、戶號、社區名稱；410 表示已過期</td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/auth/register</code></td>
+            <td>以邀請 token 完成帳號註冊（設定密碼）；回傳 JWT pair</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Buildings &amp; Users 模組</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>方法</th><th>路徑</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/users/invite</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>建立 INVITED 用戶 + 邀請連結；需提供 email 或 phone 之一</td>
+          </tr>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/users/search</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>住戶 Typeahead 搜尋（最少 2 字元）；寫入 USER_SEARCH 稽核日誌；回傳最多 10 筆</td>
+          </tr>
+          <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/users/me/push-token</code> <code>[JWT]</code></td>
+            <td>Upsert FCM 推播 token（ON CONFLICT(user_id, platform) DO UPDATE）</td>
+          </tr>
+          <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/users/me/notification-prefs</code> <code>[JWT]</code></td>
+            <td>更新推播偏好設定；announcements_urgent 強制為 true，無法關閉</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Packages 模組</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>方法</th><th>路徑</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/packages</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>記錄包裹到件；同步 FCM 推播住戶；回傳 <code>notified: bool</code></td>
+          </tr>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/packages/my</code> <code>[JWT][BG][RESIDENT]</code></td>
+            <td>住戶查看自己的待領取包裹（全部）及已領取記錄（最近 30 天）</td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/packages/:id/collected</code> <code>[JWT][BG]</code></td>
+            <td>標記已領取；住戶只能操作自己的包裹；409 表示已領取；樂觀鎖防重複</td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/packages/:id/notify</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>補發推播通知；24 小時 rate-limit（429 回應）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Announcements 模組</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>方法</th><th>路徑</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/announcements</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>建立公告；PII 關鍵詞檢查（欠費/滯納/未繳/催繳）；可立即發布或排程；FCM 批次推播（最大 500/批次）</td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/announcements/:id/read</code> <code>[JWT][BG][RESIDENT]</code></td>
+            <td>標記已讀；冪等操作（INSERT ON CONFLICT DO NOTHING）</td>
+          </tr>
+          <tr>
+            <td><code>GET</code></td>
+            <td><code>/announcements/:id/read-receipts</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>已讀回執統計；回傳 <code>unit_number</code>（不含姓名，個資法合規）；寫入 READ_RECEIPT_VIEW 稽核</td>
+          </tr>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/announcements/:id/remind</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>向未讀住戶補發 FCM；12 小時 rate-limit（429 回應）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Maintenance 模組</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>方法</th><th>路徑</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/maintenance</code> <code>[JWT][BG][RESIDENT]</code></td>
+            <td>提交維修工單；同步 FCM 推播所有管理員；每住戶最多 5 件未結案（429 超限）</td>
+          </tr>
+          <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/maintenance/:id</code> <code>[JWT][BG][MANAGER]</code></td>
+            <td>更新工單狀態（狀態機驗證）；RESOLVED 需填說明；FCM 推播住戶（ASSIGNED/IN_PROGRESS/RESOLVED）；422 表示無效轉換</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Files 模組</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>方法</th><th>路徑</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST</code></td>
+            <td><code>/files/presigned-url</code> <code>[JWT][BG]</code></td>
+            <td>產生 S3 Presigned PUT URL（5 分鐘有效）；filename 伺服器端消毒；S3 key 綁定 building_id；客戶端直接上傳，不經過 API</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       5. Frontend Route Architecture
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>前端路由架構（App Router）</h2>
+    <p>Web Dashboard 採 Next.js 14 App Router，三個路由群組（Route Groups）：<code>(auth)</code> 公開頁、<code>(manager)</code> 管理員工作台、<code>(admin)</code> 主委稽核視圖。所有 <code>page.tsx</code> 為 Client Component，layout 為 Server Component（渲染 shell HTML，資料由 SWR 在 hydration 後取得）。</p>
+    <div class="diagram-block">
+      <pre>
+src/app/
+  (auth)/
+    login/
+      page.tsx              ← 公開，無需認證
+
+  (manager)/
+    layout.tsx              ← AppShell：Sidebar + TopNav；需 MANAGER 角色
+    dashboard/page.tsx      ← 總覽統計（待領包裹數、未結工單數、最新公告）
+    packages/
+      page.tsx              ← 包裹列表（篩選、搜尋、標記取件）
+      new/page.tsx          ← 記錄到件（Typeahead 住戶搜尋 + 照片上傳）
+      [id]/page.tsx         ← 包裹詳情 + 行內操作
+    announcements/
+      page.tsx              ← 公告列表（DRAFT/SCHEDULED/PUBLISHED 篩選）
+      new/page.tsx          ← 新增公告（TipTap 編輯器 + 排程選擇器）
+      [id]/page.tsx         ← 公告詳情 + 已讀回執面板（SWR 30 秒 polling）
+    maintenance/
+      page.tsx              ← 工單列表（狀態篩選，URGENT 優先排序）
+      [id]/page.tsx         ← 工單詳情 + 狀態更新表單 + 時間軸
+    residents/
+      page.tsx              ← 住戶名冊（搜尋、停用、重新邀請）
+      invite/page.tsx       ← 邀請住戶表單
+
+  (admin)/
+    layout.tsx              ← AppShell；需 ADMIN 角色
+    dashboard/page.tsx      ← 唯讀合規總覽
+    announcements/
+      page.tsx              ← 公告稽核列表（含封存）
+      [id]/page.tsx         ← 公告詳情 + CSV 匯出（無編輯控制）
+    users/page.tsx          ← 管理員帳號管理（邀請 / 停用）
+      </pre>
+    </div>
+    <div class="highlight">
+      <strong>路由重導邏輯：</strong><code>/</code> 依角色重導至對應 dashboard。<code>middleware.ts</code>（Edge Runtime）讀取 Cookie 中的 access_token 執行路由防護；MANAGER 嘗試存取 <code>/admin/*</code> 路由時重導至 <code>/dashboard</code>，反之亦然。
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       6. Key Architecture Decisions
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>關鍵架構決策</h2>
+    <div class="decision-grid">
+
+      <div class="decision-card">
+        <div class="dc-name">多租戶隔離</div>
+        <div class="dc-tag">Multi-tenancy</div>
+        <div class="dc-rationale">
+          <code>building_id</code> 嵌入 JWT payload；BuildingGuard 在每次資料存取時驗證 <code>entity.building_id === jwt.building_id</code>。跨社區請求回傳 404（避免暴露資源存在），而非 403。Admin 角色可繞過 building scope。
+        </div>
+      </div>
+
+      <div class="decision-card">
+        <div class="dc-name">JWT 認證策略</div>
+        <div class="dc-tag">Auth</div>
+        <div class="dc-rationale">
+          Access Token 有效期 15 分鐘；Refresh Token 30 天，採 token rotation（每次使用產生新 token）。舊 token 重用觸發 family 全數撤銷並寫入 Redis 黑名單。登出或帳號停用時即時失效（SADD blacklist:{user_id} jti）。
+        </div>
+      </div>
+
+      <div class="decision-card">
+        <div class="dc-name">檔案儲存策略</div>
+        <div class="dc-tag">Storage</div>
+        <div class="dc-rationale">
+          二進位資料永不經過 API。API 產生 Presigned PUT URL（5 分鐘有效），客戶端直接上傳至 S3/R2。GET URL 15 分鐘有效。S3 key 格式：<code>buildings/{bid}/{context}/{id}/{filename}</code>，確保多租戶路徑隔離。
+        </div>
+      </div>
+
+      <div class="decision-card">
+        <div class="dc-name">推播通知設計</div>
+        <div class="dc-tag">FCM</div>
+        <div class="dc-rationale">
+          FCM <code>sendEachForMulticast</code> 最大 500 tokens/批次；失效 token（registration-token-not-registered）自動從 DB 清除。測試環境注入 <code>FakeFcmAdapter</code>（INotificationAdapter 介面），不發出真實推播，可透過 <code>GET /test/notifications/dispatched</code> 查驗。
+        </div>
+      </div>
+
+      <div class="decision-card">
+        <div class="dc-name">前端狀態管理</div>
+        <div class="dc-tag">Frontend State</div>
+        <div class="dc-rationale">
+          伺服器狀態交由 SWR 管理（快取、去重、焦點重新驗證、polling）；表單狀態使用 react-hook-form（無受控重渲染）；Auth 狀態使用 React Context；UI 暫態（modal open、filter、selected rows）使用元件本地 <code>useState</code>。不引入 Zustand 或 Redux。
+        </div>
+      </div>
+
+      <div class="decision-card">
+        <div class="dc-name">個資法合規</div>
+        <div class="dc-tag">Privacy (個資法)</div>
+        <div class="dc-rationale">
+          已讀回執僅回傳 <code>unit_number</code>，不含姓名（B-4 決策）。費用催繳類關鍵詞（欠費/滯納/未繳/催繳）在 API 層與 UI 層雙重檢查，觸發警告。所有個資相關操作寫入 <code>pii_audit_log</code>（5 年保留），<code>PiiAuditInterceptor</code> 裝飾器驅動。
+        </div>
+      </div>
+
+      <div class="decision-card">
+        <div class="dc-name">公告內容格式</div>
+        <div class="dc-tag">Content</div>
+        <div class="dc-rationale">
+          公告正文採 TipTap JSON（<code>content_json jsonb</code>），最大 50KB，在 API 層強制驗證（D-4 決策）。不允許原始 HTML（XSS 風險），前端以 <code>TipTapViewer</code> 渲染，React Native 端以自訂渲染器解析同一 JSON 結構。
+        </div>
+      </div>
+
+      <div class="decision-card">
+        <div class="dc-name">分頁策略</div>
+        <div class="dc-tag">Pagination</div>
+        <div class="dc-rationale">
+          MVP 採 offset-based pagination（<code>?page=1&amp;limit=25</code>），實作簡單，符合管理員使用情境（按頁瀏覽，非無限捲動）。Cursor-based pagination（適合大資料集或 real-time feed）列為 P1 改進項目。
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       7. Sprint 0 Scope
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>Sprint 0 實作範疇（W1–2）</h2>
+    <p>Sprint 0 的目標是建立可運作的基礎設施骨架，讓 Sprint 1（公告系統）得以順利啟動。</p>
+
+    <h3>Backend（Week 1）</h3>
+    <ul class="sprint-list">
+      <li>
+        <span class="s-badge">基礎設施</span>
+        <span class="s-text">NestJS AppModule 骨架 + TypeORM 配置（synchronize: false）；Docker Compose（API + PostgreSQL + Redis）；.env.test 設定；Seed Script</span>
+      </li>
+      <li>
+        <span class="s-badge">資料庫</span>
+        <span class="s-text">TypeORM 初始 Migration（建立所有 11 張資料表 + ENUM 類型 + 索引）；TimeStamped migration 檔案命名慣例</span>
+      </li>
+      <li>
+        <span class="s-badge">Auth</span>
+        <span class="s-text">POST /auth/login、POST /auth/refresh、GET /auth/me；JWT 15min + Refresh 30d rotation；Redis blacklist；password_hash bcrypt（rounds=12 prod）</span>
+      </li>
+      <li>
+        <span class="s-badge">RBAC</span>
+        <span class="s-text">JwtAuthGuard、RolesGuard、BuildingGuard 全部實作上線；@Roles / @CurrentUser / @PiiAudit 裝飾器；CommonModule 全域注冊</span>
+      </li>
+      <li>
+        <span class="s-badge">測試</span>
+        <span class="s-text">FakeFcmAdapter 注入；BuildingGuard spec（TC-BG-01 至 TC-BG-05）；Auth module e2e tests；CI pipeline（GitHub Actions）</span>
+      </li>
+    </ul>
+
+    <h3>Frontend（Week 1–2）</h3>
+    <ul class="sprint-list">
+      <li>
+        <span class="s-badge">路由防護</span>
+        <span class="s-text">middleware.ts Edge 路由防護（JWT Cookie 解碼，角色重導）；AuthContext（login / logout / localStorage + Cookie hydration）</span>
+      </li>
+      <li>
+        <span class="s-badge">Shell</span>
+        <span class="s-text">AppShell、Sidebar（MANAGER nav items）、TopNav、PageHeader；tailwind.config.ts 完整設計系統 token</span>
+      </li>
+      <li>
+        <span class="s-badge">登入頁</span>
+        <span class="s-text">/login 頁面 + LoginForm；react-hook-form 驗證；Axios interceptor（含 refresh 並發鎖）；錯誤 toast（繁中）</span>
+      </li>
+      <li>
+        <span class="s-badge">UI 元件庫</span>
+        <span class="s-text">Button、Input、Badge、Toast / ToastProvider、ConfirmDialog、DataTable（含 SkeletonLoader）、EmptyState</span>
+      </li>
+      <li>
+        <span class="s-badge">包裹功能</span>
+        <span class="s-text">（Week 2）usePackages / usePackage / useMutatePackage hooks；PackageTable、PackageLogForm（含 Typeahead）、PackageDetail；useS3Upload Presigned URL 流程</span>
+      </li>
+    </ul>
+  </section>
+
+</div>
+
+<footer>
+  Linkju &nbsp;｜&nbsp; <a href="https://github.com/PigeonPacket" style="color: inherit;">PigeonPacket</a> &nbsp;｜&nbsp; 文件更新頻率：每次重大調研或里程碑後
+</footer>
+
+</body>
+</html>
