@@ -434,14 +434,14 @@
             <td><strong>M0 — Sprint 0</strong></td>
             <td>W1–2</td>
             <td>NestJS 模組骨架、JWT 認證、RBAC 角色控管</td>
-            <td><span class="badge-inprogress">🟡 Ready to Start</span></td>
-            <td>Auth 模組、住戶／管理員角色、JWT refresh token、基礎 CI/CD pipeline（Blocker B-3 解除後正式啟動）</td>
+            <td><span class="badge-complete">🟢 Complete (2026-06-04)</span></td>
+            <td>Auth 模組、住戶／管理員角色、JWT refresh token、基礎 CI/CD pipeline、BuildingGuard 上線</td>
           </tr>
           <tr class="milestone-row-m1">
             <td><strong>M1 — Sprint 1</strong></td>
             <td>W3–4</td>
             <td>公告系統完整上線</td>
-            <td><span class="badge-notstarted">🔴 Not Started</span></td>
+            <td><span class="badge-inprogress">🟡 In Progress</span></td>
             <td>公告建立／發布、FCM 推播、已讀追蹤、管理員後台、公告列表與詳情頁</td>
           </tr>
           <tr class="milestone-row-m2">
@@ -462,7 +462,7 @@
       </table>
     </div>
     <div class="highlight">
-      <strong>Kickoff 完成 (2026-06-04)：</strong>Sprint 0 已通過 GO 判定（附條件）。工程可於 Week 1 Day 1 開始基礎設施搭建；Sprint 1 規劃確認需等 Week 1 四項 Blocker 解除，由 PM 於 Week 1 結束前簽核放行。
+      <strong>Sprint 0 完成 (2026-06-04)：</strong>Auth + RBAC + BuildingGuard 全部上線，所有 Kickoff GO 條件（B-1 至 B-4）已解除。Sprint 1 正式進入 In Progress — Announcements module 後端開發中。
     </div>
   </section>
 
@@ -874,41 +874,41 @@
        6. Next Actions
   ──────────────────────────────────────────── -->
   <section>
-    <h2>下一步行動（Kickoff 後 Week 1）</h2>
+    <h2>下一步行動（Sprint 1 進行中）</h2>
     <ul class="action-list">
+      <li>
+        <span class="a-icon">✅</span>
+        <div>
+          <span class="a-role">Sprint 0 完成（2026-06-04）</span>
+          <span class="a-text">Auth + RBAC + BuildingGuard 全部上線。JwtAuthGuard、RolesGuard、BuildingGuard 實作完畢；BuildingGuard spec（TC-BG-01 至 TC-BG-05）通過；CI pipeline 正常運行。</span>
+        </div>
+      </li>
       <li>
         <span class="a-icon">⚙️</span>
         <div>
-          <span class="a-role">QA 工程師（Day 1 — 最優先）</span>
-          <span class="a-text">確認基礎設施 Checklist（B-3）：Docker Compose、CI Pipeline、Seed Script、FakeFcmAdapter、.env.test 均存在且正常運行；同步重寫 TC-MNT-01（FCM 斷言 + 移除 category）與 TC-PKG-01（移除 tracking_number）。</span>
+          <span class="a-role">後端工程師（Sprint 1 進行中）</span>
+          <span class="a-text">Announcements module 後端開發中：POST /announcements、GET /announcements、POST /announcements/:id/read、GET /announcements/:id/read-receipts、POST /announcements/:id/remind；FCM 批次推播（500 tokens/批次）；定時排程掃描（每分鐘）。</span>
         </div>
       </li>
       <li>
-        <span class="a-icon">📋</span>
+        <span class="a-icon">🖥️</span>
         <div>
-          <span class="a-role">產品負責人（Day 1–2）</span>
-          <span class="a-text">修正密碼政策（US-402 AC3）、新增推播授權前置說明 AC、決定管理員 web-only（D-3）、確認公告格式 content_json（D-4）、決定無 category 欄位（D-1）。</span>
+          <span class="a-role">前端工程師（Sprint 1 進行中）</span>
+          <span class="a-text">公告管理後台開發：公告列表（DRAFT/SCHEDULED/PUBLISHED 篩選）、新增公告（TipTap 編輯器 + 排程選擇器）、公告詳情 + 已讀回執面板（SWR 30 秒 polling）。</span>
         </div>
       </li>
       <li>
-        <span class="a-icon">🎨</span>
+        <span class="a-icon">🧪</span>
         <div>
-          <span class="a-role">設計師（Day 3）</span>
-          <span class="a-text">交付推播授權前置說明畫面設計稿（含拒絕後設定還原畫面）與住戶 FTUE 空 Home Tab 設計稿——這兩張畫面是 Sprint 1 住戶入住流程工程開發的前置條件。</span>
-        </div>
-      </li>
-      <li>
-        <span class="a-icon">🔍</span>
-        <div>
-          <span class="a-role">UX 研究員（Day 2–5）</span>
-          <span class="a-text">確認 Greenfield 物業公司開發責任歸屬；完成 PTT/Dcard Win-back 社區搜尋（目標：識別 2–3 個可接觸的聯絡人）；起草研究資料處理 SOP（含知情同意書、PII 錄音刪除協議）。</span>
+          <span class="a-role">QA 工程師（Sprint 1 同步進行）</span>
+          <span class="a-text">補齊 Announcements module 測試案例（TC-ANN-01 至 TC-ANN-10）；驗證 FCM 推播斷言（FakeFcmAdapter）；PII 關鍵詞過濾測試（欠費/滯納/未繳/催繳）。</span>
         </div>
       </li>
       <li>
         <span class="a-icon">🧭</span>
         <div>
-          <span class="a-role">產品經理（Day 5）</span>
-          <span class="a-text">確認所有 Kickoff GO 條件（B-1 至 B-4）已解除；簽核 Sprint 1 規劃放行；更新 team.html 里程碑狀態。</span>
+          <span class="a-role">產品經理（Sprint 1 結束前）</span>
+          <span class="a-text">確認 Sprint 1 驗收條件完整；簽核 Sprint 2（包裹通知 + 工單系統）規劃放行；更新 team.html 里程碑狀態。</span>
         </div>
       </li>
     </ul>

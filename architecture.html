@@ -772,6 +772,117 @@ src/app/
     </ul>
   </section>
 
+  <!-- ──────────────────────────────────────────────
+       8. Operational Cost Estimation
+  ────────────────────────────────────────────── -->
+  <section>
+    <h2>💰 營運成本估算</h2>
+    <p>以下成本數據來自完整基礎設施分析（<code>docs/business/operational-costs.md</code>）。匯率：1 USD = 32 NT$。</p>
+
+    <h3>三情境成本摘要</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>情境</th>
+            <th>社區數</th>
+            <th>月成本</th>
+            <th>月收入</th>
+            <th>毛利率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Pilot</strong></td>
+            <td>2</td>
+            <td>NT$604</td>
+            <td>NT$7,000</td>
+            <td>91%</td>
+          </tr>
+          <tr>
+            <td><strong>MVP Growth</strong></td>
+            <td>10</td>
+            <td>NT$1,247</td>
+            <td>NT$35,000</td>
+            <td>96%</td>
+          </tr>
+          <tr>
+            <td><strong>Scale</strong></td>
+            <td>50</td>
+            <td>NT$4,710</td>
+            <td>NT$175,000</td>
+            <td>97%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Pilot 推薦 Stack</h3>
+    <div class="tech-grid">
+
+      <div class="tech-card">
+        <div class="tc-header">
+          <div class="tc-icon">🚂</div>
+          <div>
+            <div class="tc-title">API + DB</div>
+            <div class="tc-subtitle">Railway</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>費用：</strong>NT$~1,200/mo（API + Postgres）</li>
+          <li><strong>說明：</strong>free credit 可用；usage-based billing；單一 dashboard 管理 API + DB</li>
+        </ul>
+      </div>
+
+      <div class="tech-card">
+        <div class="tc-header">
+          <div class="tc-icon">☁️</div>
+          <div>
+            <div class="tc-title">檔案存儲</div>
+            <div class="tc-subtitle">Cloudflare R2</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>費用：</strong>免費（Pilot 全程）</li>
+          <li><strong>說明：</strong>10 GB 免費；egress 免費；S3 相容 API，零程式碼改動</li>
+        </ul>
+      </div>
+
+      <div class="tech-card">
+        <div class="tc-header">
+          <div class="tc-icon">🔔</div>
+          <div>
+            <div class="tc-title">Push + Cache</div>
+            <div class="tc-subtitle">FCM + Upstash Redis</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>費用：</strong>NT$0（免費層）</li>
+          <li><strong>說明：</strong>FCM 無訊息配額上限；Upstash 500K 指令/月免費，覆蓋 Pilot 全部 Redis 用量</li>
+        </ul>
+      </div>
+
+      <div class="tech-card">
+        <div class="tc-header">
+          <div class="tc-icon">📊</div>
+          <div>
+            <div class="tc-title">監控 + Email</div>
+            <div class="tc-subtitle">Sentry Free + Resend Free</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>費用：</strong>NT$0（免費層）</li>
+          <li><strong>說明：</strong>Sentry 5K errors/月；Resend 3K emails/月；兩者均覆蓋 Pilot 及 MVP Growth</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="highlight">
+      <strong>關鍵洞察：</strong>一個付費社區（NT$3,500/月）覆蓋整個 Pilot 基礎設施成本（NT$604）。損益平衡點是人力：約 21 個社區 cover 一位全職工程師。
+    </div>
+  </section>
+
 </div>
 
 <footer>
