@@ -319,7 +319,7 @@
 <header>
   <h1>產品團隊 Dashboard</h1>
   <div class="sub">MVP Phase · Sprint 0–3 · 8 Weeks</div>
-  <div class="meta">最後更新：2026-06-04（Kickoff 討論完成）&nbsp;｜&nbsp; 維護人：PM</div>
+  <div class="meta">最後更新：2026-06-06（Sprint 1 後端 ✅ + App Sprint 0 完成中）&nbsp;｜&nbsp; 維護人：PM</div>
 </header>
 
 <div class="container">
@@ -441,15 +441,15 @@
             <td><strong>M1 — Sprint 1</strong></td>
             <td>W3–4</td>
             <td>公告系統完整上線</td>
-            <td><span class="badge-inprogress">🟡 In Progress</span></td>
-            <td>公告建立／發布、FCM 推播、已讀追蹤、管理員後台、公告列表與詳情頁</td>
+            <td><span class="badge-inprogress">🟡 In Progress (超前進度)</span></td>
+            <td>公告建立／發布 ✅、FCM 批次推播 ✅、已讀回執追蹤 ✅、公告列表頁 ✅（API 端）、Web 公告列表 ✅、Web 新增公告表單 ✅、Web 已讀回執頁進行中、Mobile App push-token 註冊進行中</td>
           </tr>
           <tr class="milestone-row-m2">
             <td><strong>M2 — Sprint 2</strong></td>
             <td>W5–6</td>
             <td>包裹通知 + 工單系統上線</td>
-            <td><span class="badge-notstarted">🔴 Not Started</span></td>
-            <td>包裹到件掃描、住戶 FCM 通知、取件確認、工單提交／指派／狀態追蹤、SLA 計時</td>
+            <td><span class="badge-notstarted">🔴 API 合約草擬中</span></td>
+            <td>包裹（包裹 packages）到件掃描、住戶 FCM 通知、取件確認；維修工單（維修工單 work orders）提交／指派／狀態追蹤、SLA 計時；API 合約本週草擬</td>
           </tr>
           <tr class="milestone-row-m3">
             <td><strong>M3 — Sprint 3</strong></td>
@@ -462,7 +462,7 @@
       </table>
     </div>
     <div class="highlight">
-      <strong>Sprint 0 完成 (2026-06-04)：</strong>Auth + RBAC + BuildingGuard 全部上線，所有 Kickoff GO 條件（B-1 至 B-4）已解除。Sprint 1 正式進入 In Progress — Announcements module 後端開發中。
+      <strong>進度超前（2026-06-06）：</strong>linkju-api Sprint 0 ✅ + Sprint 1 ✅ — 公告模組、已讀回執、FCM 批次推播均已完成，push-token 註冊端點已上線。linkju-web Sprint 1 進行中：公告列表 ✅、新增公告表單 ✅，已讀回執頁本週完成。linkju-app Sprint 0 接近完成：Expo Router 遷移 ✅、登入/Auth ✅，FCM push-token 註冊本週上線（完成 Sprint 0）。Sprint 2（包裹 + 維修工單）API 合約草擬中。
     </div>
   </section>
 
@@ -874,41 +874,41 @@
        6. Next Actions
   ──────────────────────────────────────────── -->
   <section>
-    <h2>下一步行動（Sprint 1 進行中）</h2>
+    <h2>下一步行動（Sprint 1 尾聲 → Sprint 2 準備中）</h2>
     <ul class="action-list">
       <li>
         <span class="a-icon">✅</span>
         <div>
-          <span class="a-role">Sprint 0 完成（2026-06-04）</span>
-          <span class="a-text">Auth + RBAC + BuildingGuard 全部上線。JwtAuthGuard、RolesGuard、BuildingGuard 實作完畢；BuildingGuard spec（TC-BG-01 至 TC-BG-05）通過；CI pipeline 正常運行。</span>
-        </div>
-      </li>
-      <li>
-        <span class="a-icon">⚙️</span>
-        <div>
-          <span class="a-role">後端工程師（Sprint 1 進行中）</span>
-          <span class="a-text">Announcements module 後端開發中：POST /announcements、GET /announcements、POST /announcements/:id/read、GET /announcements/:id/read-receipts、POST /announcements/:id/remind；FCM 批次推播（500 tokens/批次）；定時排程掃描（每分鐘）。</span>
+          <span class="a-role">linkju-api Sprint 0 + Sprint 1 完成（2026-06-06）</span>
+          <span class="a-text">Auth + RBAC + BuildingGuard ✅；Announcements 模組（建立/發布/排程/已讀回執/FCM 批次推播）✅；push-token 註冊端點（PATCH /users/me/push-token）✅。</span>
         </div>
       </li>
       <li>
         <span class="a-icon">🖥️</span>
         <div>
-          <span class="a-role">前端工程師（Sprint 1 進行中）</span>
-          <span class="a-text">公告管理後台開發：公告列表（DRAFT/SCHEDULED/PUBLISHED 篩選）、新增公告（TipTap 編輯器 + 排程選擇器）、公告詳情 + 已讀回執面板（SWR 30 秒 polling）。</span>
+          <span class="a-role">linkju-web 前端工程師（Sprint 1 進行中）</span>
+          <span class="a-text">已完成：公告列表頁（DRAFT/SCHEDULED/PUBLISHED 篩選）✅、新增公告表單（TipTap 編輯器 + 排程選擇器）✅。本週完成：公告詳情 + 已讀回執面板（SWR 30 秒 polling）。</span>
         </div>
       </li>
       <li>
-        <span class="a-icon">🧪</span>
+        <span class="a-icon">📱</span>
         <div>
-          <span class="a-role">QA 工程師（Sprint 1 同步進行）</span>
-          <span class="a-text">補齊 Announcements module 測試案例（TC-ANN-01 至 TC-ANN-10）；驗證 FCM 推播斷言（FakeFcmAdapter）；PII 關鍵詞過濾測試（欠費/滯納/未繳/催繳）。</span>
+          <span class="a-role">linkju-app 行動端工程師（Sprint 0 完成中）</span>
+          <span class="a-text">已完成：Expo Router 遷移 ✅、登入/Auth ✅。本週完成：FCM push-token 註冊（完成 Sprint 0）。</span>
+        </div>
+      </li>
+      <li>
+        <span class="a-icon">⚙️</span>
+        <div>
+          <span class="a-role">後端工程師（Sprint 2 準備）</span>
+          <span class="a-text">草擬 Sprint 2 API 合約：包裹（packages）模組端點、維修工單（work orders）模組端點；設計工單狀態機（OPEN → ASSIGNED → IN_PROGRESS → RESOLVED → CLOSED）。</span>
         </div>
       </li>
       <li>
         <span class="a-icon">🧭</span>
         <div>
-          <span class="a-role">產品經理（Sprint 1 結束前）</span>
-          <span class="a-text">確認 Sprint 1 驗收條件完整；簽核 Sprint 2（包裹通知 + 工單系統）規劃放行；更新 team.html 里程碑狀態。</span>
+          <span class="a-role">產品經理（本週）</span>
+          <span class="a-text">確認 Sprint 1 Web 已讀回執頁驗收；簽核 Sprint 2（包裹 packages + 維修工單 maintenance）規劃放行；更新 team.html 里程碑狀態。</span>
         </div>
       </li>
     </ul>

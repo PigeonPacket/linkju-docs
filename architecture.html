@@ -237,8 +237,8 @@
 
 <header>
   <h1>系統架構設計 (SASD)</h1>
-  <div class="sub">MVP Phase · Backend + Frontend · 2026-06-04</div>
-  <div class="meta">最後更新：2026-06-04（Sprint 0 工程參考版）&nbsp;｜&nbsp; 維護人：Lead Architect</div>
+  <div class="sub">MVP Phase · Backend + Frontend · 2026-06-06</div>
+  <div class="meta">最後更新：2026-06-06（Sprint 1 API 完成；Sprint 2 合約草擬中）&nbsp;｜&nbsp; 維護人：Lead Architect</div>
 </header>
 
 <div class="container">
@@ -720,10 +720,10 @@ src/app/
        7. Sprint 0 Scope
   ────────────────────────────────────────────── -->
   <section>
-    <h2>Sprint 0 實作範疇（W1–2）</h2>
-    <p>Sprint 0 的目標是建立可運作的基礎設施骨架，讓 Sprint 1（公告系統）得以順利啟動。</p>
+    <h2>Sprint 進度追蹤（截至 2026-06-06）</h2>
 
-    <h3>Backend（Week 1）</h3>
+    <h3>✅ Sprint 0（W1–2）— 全部完成</h3>
+    <p>建立可運作的基礎設施骨架，所有 GO 條件（B-1 至 B-4）已解除。</p>
     <ul class="sprint-list">
       <li>
         <span class="s-badge">基礎設施</span>
@@ -747,7 +747,54 @@ src/app/
       </li>
     </ul>
 
-    <h3>Frontend（Week 1–2）</h3>
+    <h3>✅ Sprint 1（W3–4）— API 完成；Web + App 進行中（超前進度）</h3>
+    <p>公告系統後端全部完成；Web 前端公告列表與建立已完成，已讀回執頁進行中；App FCM push-token 端點本週上線。</p>
+    <ul class="sprint-list">
+      <li>
+        <span class="s-badge">Announcements API</span>
+        <span class="s-text">POST /announcements（草稿/立即發布/排程）✅；GET /announcements（列表，含狀態篩選）✅；POST /announcements/:id/read（已讀回執，冪等）✅；GET /announcements/:id/read-receipts（管理員查閱）✅；POST /announcements/:id/remind（補發推播，12h rate-limit）✅</span>
+      </li>
+      <li>
+        <span class="s-badge">FCM 推播</span>
+        <span class="s-text">sendEachForMulticast 批次推播（最大 500 tokens/批次）✅；定時排程掃描（@nestjs/schedule，每分鐘）✅；失效 token 自動清除 ✅</span>
+      </li>
+      <li>
+        <span class="s-badge">Push Token</span>
+        <span class="s-text">PATCH /users/me/push-token（Upsert，ON CONFLICT(user_id, platform) DO UPDATE）✅；供 linkju-app 呼叫</span>
+      </li>
+      <li>
+        <span class="s-badge">Web — 公告列表</span>
+        <span class="s-text">announcements/page.tsx（DRAFT/SCHEDULED/PUBLISHED 篩選）✅</span>
+      </li>
+      <li>
+        <span class="s-badge">Web — 新增公告</span>
+        <span class="s-text">announcements/new/page.tsx（TipTap 編輯器 + 排程選擇器）✅</span>
+      </li>
+      <li>
+        <span class="s-badge">Web — 已讀回執</span>
+        <span class="s-text">announcements/[id]/page.tsx（已讀回執面板，SWR 30 秒 polling）— 進行中</span>
+      </li>
+      <li>
+        <span class="s-badge">App — FCM 註冊</span>
+        <span class="s-text">FCM push-token 取得 + PATCH /users/me/push-token 呼叫（完成 linkju-app Sprint 0）— 進行中</span>
+      </li>
+    </ul>
+
+    <h3>Sprint 2（W5–6）— API 合約草擬中</h3>
+    <p>包裹（packages）與維修工單（maintenance work orders）模組。</p>
+    <ul class="sprint-list">
+      <li>
+        <span class="s-badge">Packages API</span>
+        <span class="s-text">POST /packages（到件通知 + FCM）、GET /packages/my（住戶自查）、POST /packages/:id/collected、POST /packages/:id/notify（補發，24h rate-limit）— 合約草擬中</span>
+      </li>
+      <li>
+        <span class="s-badge">Maintenance API</span>
+        <span class="s-text">POST /maintenance（提交工單 + FCM 推播管理員）、PATCH /maintenance/:id（狀態機更新）— 合約草擬中</span>
+      </li>
+    </ul>
+
+    <h3>Frontend Sprint 0（W1–2）— 完成</h3>
+    <p>Web Dashboard 基礎設施骨架。</p>
     <ul class="sprint-list">
       <li>
         <span class="s-badge">路由防護</span>
@@ -764,10 +811,6 @@ src/app/
       <li>
         <span class="s-badge">UI 元件庫</span>
         <span class="s-text">Button、Input、Badge、Toast / ToastProvider、ConfirmDialog、DataTable（含 SkeletonLoader）、EmptyState</span>
-      </li>
-      <li>
-        <span class="s-badge">包裹功能</span>
-        <span class="s-text">（Week 2）usePackages / usePackage / useMutatePackage hooks；PackageTable、PackageLogForm（含 Typeahead）、PackageDetail；useS3Upload Presigned URL 流程</span>
       </li>
     </ul>
   </section>
