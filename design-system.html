@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linkju 連居 — 設計系統與品牌識別 Design System &amp; CIS</title>
+<meta name="description" content="Linkju 連居 living styleguide / brand book — navy calm-infrastructure design system, tokens, components and trust guardrails. v0 draft for founder review.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =========================================================================
+   TIER 1 — PRIMITIVE TOKENS  (verbatim from design-tokens.md §1 / design-system.md §2)
+   Components below consume the TIER 2 semantic aliases, never these directly.
+   ========================================================================= */
+:root{
+  /* brand (navy) */
+  --color-brand-900:#0D2137; --color-brand-800:#14375E; --color-brand-700:#1A5094;
+  --color-brand-600:#1D6BC7; --color-brand-500:#3D87E0; --color-brand-400:#6AAAF0;
+  --color-brand-300:#A3CCFA; --color-brand-200:#D1E8FD; --color-brand-100:#EBF4FF; --color-brand-50:#F5F9FF;
+  /* neutral */
+  --color-neutral-950:#0F1117; --color-neutral-900:#1C1F26; --color-neutral-800:#2E3441;
+  --color-neutral-700:#4A5568; --color-neutral-600:#718096; --color-neutral-500:#A0AEC0;
+  --color-neutral-400:#CBD5E0; --color-neutral-300:#E2E8F0; --color-neutral-200:#EDF2F7;
+  --color-neutral-100:#F7FAFC; --color-neutral-50:#FFFFFF;
+  /* status */
+  --color-success-700:#1A6B3C; --color-success-600:#22863A; --color-success-500:#28A745;
+  --color-success-200:#C3E6CB; --color-success-100:#D4EDDA; --color-success-50:#EDF7F0;
+  --color-warning-700:#7A4F0D; --color-warning-600:#B06B0F; --color-warning-500:#E08A14;
+  --color-warning-200:#FDDBA0; --color-warning-100:#FEF3CD; --color-warning-50:#FFFBF0;
+  --color-error-700:#721C24; --color-error-600:#A41C2A; --color-error-500:#DC3545;
+  --color-error-200:#F5C6CB; --color-error-100:#F8D7DA; --color-error-50:#FFF5F6;
+  --color-info-600:#0C63A3; --color-info-500:#1184E8; --color-info-200:#B8DCFB;
+  --color-info-100:#CCE5FF; --color-info-50:#EBF5FF;
+
+  /* spacing — 4px grid */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+  --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px; --space-20:80px;
+
+  /* radius */
+  --radius-sm:6px; --radius-md:8px; --radius-lg:10px; --radius-xl:12px; --radius-pill:9999px;
+
+  /* shadow / elevation (navy-tinted ink, never colored) */
+  --shadow-sm:0 1px 3px rgba(15,17,23,0.08);
+  --shadow-md:0 4px 12px rgba(15,17,23,0.10);
+  --shadow-overlay:0 4px 16px rgba(15,17,23,0.12);
+
+  /* motion */
+  --duration-fast:150ms; --duration-normal:250ms; --duration-slow:400ms; --duration-page:300ms;
+  --easing-out:cubic-bezier(0.0,0.0,0.2,1.0);
+  --easing-in:cubic-bezier(0.4,0.0,1.0,1.0);
+  --easing-inout:cubic-bezier(0.4,0.0,0.2,1.0);
+
+  /* z-index */
+  --z-base:0; --z-sticky:100; --z-dropdown:1000; --z-overlay:1100; --z-modal:1200; --z-toast:1300;
+
+  /* type families */
+  --font-latin:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-cjk:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Apple LiGothic Medium",sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono","Consolas",monospace;
+  --font-base:"Inter","Noto Sans TC",-apple-system,BlinkMacSystemFont,sans-serif;
+
+  /* ----- TIER 2 — SEMANTIC (light) ----- */
+  --fg-default:var(--color-neutral-900);
+  --fg-muted:var(--color-neutral-700);
+  --fg-subtle:var(--color-neutral-600);
+  --fg-onEmphasis:var(--color-neutral-50);
+  --fg-accent:var(--color-brand-700);
+  --fg-disabled:var(--color-neutral-400);
+  --bg-canvas:var(--color-neutral-100);
+  --bg-default:var(--color-neutral-50);
+  --bg-muted:var(--color-neutral-200);
+  --bg-accent-emphasis:var(--color-brand-600);
+  --bg-accent-muted:var(--color-brand-700);
+  --bg-accent-subtle:var(--color-brand-200);
+  --bg-accent-hover:var(--color-brand-50);
+  --border-default:var(--color-neutral-300);
+  --border-muted:var(--color-neutral-200);
+  --border-strong:var(--color-neutral-400);
+  --border-accent:var(--color-brand-600);
+  --focus-ring:var(--color-brand-300);
+}
+
+/* =========================================================================
+   RESET / BASE
+   ========================================================================= */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-base);
+  font-size:14px; line-height:1.57;
+  color:var(--fg-default);
+  background:var(--bg-canvas);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+a{color:var(--fg-accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px;border-radius:2px;}
+code,.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+.tnum{font-variant-numeric:tabular-nums;}
+
+/* =========================================================================
+   LAYOUT  — fixed dark sidebar (240px) + fluid main (manager-first pattern)
+   ========================================================================= */
+.shell{display:flex;min-height:100vh;}
+.sidebar{
+  width:240px; flex:0 0 240px;
+  background:var(--color-neutral-900);
+  color:var(--color-neutral-400);
+  position:sticky; top:0; align-self:flex-start;
+  height:100vh; overflow-y:auto;
+  border-right:1px solid var(--color-neutral-800);
+  display:flex; flex-direction:column;
+}
+.sidebar-logo{
+  height:auto; min-height:64px; padding:var(--space-5) var(--space-4);
+  background:var(--color-neutral-800);
+  border-bottom:1px solid var(--color-neutral-800);
+  display:flex; align-items:center;
+}
+.sidebar-logo svg{width:172px;height:auto;display:block;}
+.nav{padding:var(--space-4) 0;flex:1;}
+.nav-label{
+  font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--color-neutral-600);
+  padding:0 var(--space-4); margin:var(--space-4) 0 var(--space-2);
+}
+.nav a{
+  display:flex; align-items:center; gap:var(--space-3);
+  height:44px; padding:0 var(--space-4);
+  color:var(--color-neutral-400); font-size:14px; font-weight:400;
+  text-decoration:none; border-left:4px solid transparent;
+  transition:background var(--duration-fast) var(--easing-out),color var(--duration-fast) var(--easing-out);
+}
+.nav a .ix{width:20px;text-align:center;color:var(--color-neutral-500);font-size:15px;}
+.nav a:hover{background:var(--color-neutral-800);color:var(--color-neutral-200);text-decoration:none;}
+.nav a:hover .ix{color:var(--color-neutral-300);}
+.nav a.active{background:var(--color-brand-700);color:#fff;font-weight:500;border-left-color:var(--color-brand-400);}
+.nav a.active .ix{color:#fff;}
+.sidebar-foot{
+  padding:var(--space-4); border-top:1px solid var(--color-neutral-800);
+  font-size:12px; color:var(--color-neutral-500); line-height:1.5;
+}
+
+.main{flex:1;min-width:0;}
+.page-header{
+  position:sticky; top:0; z-index:var(--z-sticky);
+  background:var(--bg-default);
+  border-bottom:1px solid var(--border-default);
+  padding:var(--space-5) var(--space-8);
+  display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-4);
+}
+.page-header h1{font-size:22px;font-weight:600;letter-spacing:-0.01em;color:var(--fg-default);}
+.page-header .sub{font-size:12px;color:var(--fg-subtle);}
+.content{max-width:1100px;margin:0 auto;padding:var(--space-10) var(--space-8) var(--space-20);}
+
+section{margin-bottom:var(--space-20);scroll-margin-top:84px;}
+.sec-head{margin-bottom:var(--space-6);padding-bottom:var(--space-3);border-bottom:1px solid var(--border-muted);}
+.sec-num{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg-accent);}
+.sec-head h2{font-size:22px;font-weight:600;letter-spacing:-0.01em;color:var(--fg-default);margin-top:var(--space-1);}
+.sec-head p{font-size:14px;color:var(--fg-muted);max-width:72ch;margin-top:var(--space-2);line-height:1.6;}
+h3{font-size:18px;font-weight:600;color:var(--fg-default);margin:var(--space-8) 0 var(--space-4);}
+h4{font-size:15px;font-weight:600;color:var(--color-neutral-800);margin:var(--space-6) 0 var(--space-3);}
+p.lead{font-size:16px;line-height:1.6;color:var(--fg-muted);max-width:68ch;}
+.muted{color:var(--fg-muted);}
+.subtle{color:var(--fg-subtle);font-size:12px;}
+
+/* generic card */
+.card{
+  background:var(--bg-default); border:1px solid var(--border-default);
+  border-radius:var(--radius-md); box-shadow:var(--shadow-sm); padding:var(--space-6);
+}
+.grid{display:grid;gap:var(--space-4);}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g5{grid-template-columns:repeat(5,1fr);}
+@media(max-width:900px){.g3,.g5{grid-template-columns:repeat(2,1fr);}.g2{grid-template-columns:1fr;}}
+
+/* =========================================================================
+   COVER
+   ========================================================================= */
+.cover{
+  background:var(--color-brand-900);
+  border-radius:var(--radius-xl);
+  padding:var(--space-16) var(--space-12);
+  color:#fff; position:relative; overflow:hidden;
+}
+.cover .lockup{background:#fff;border-radius:var(--radius-xl);padding:var(--space-6) var(--space-8);display:inline-block;box-shadow:var(--shadow-overlay);}
+.cover .lockup svg{width:200px;height:auto;display:block;}
+.cover h2{font-size:28px;font-weight:700;letter-spacing:-0.02em;color:#fff;border:none;margin:var(--space-8) 0 var(--space-3);}
+.cover .pos{font-size:18px;line-height:1.6;color:var(--color-brand-200);max-width:60ch;}
+.cover .tag{font-size:14px;color:var(--color-brand-300);margin-top:var(--space-4);}
+.pill-list{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-6);}
+.pill-list span{
+  font-size:12px;font-weight:500;letter-spacing:0.02em;
+  border:1px solid var(--color-brand-700); color:var(--color-brand-200);
+  padding:4px 12px; border-radius:var(--radius-pill);
+}
+.principles{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4);margin-top:var(--space-8);}
+@media(max-width:1024px){.principles{grid-template-columns:repeat(2,1fr);}}
+.principle{
+  background:var(--bg-default);border:1px solid var(--border-default);border-radius:var(--radius-md);
+  padding:var(--space-5);box-shadow:var(--shadow-sm);
+}
+.principle .n{font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--fg-accent);}
+.principle h4{font-size:15px;margin:var(--space-2) 0;}
+.principle .en{font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:var(--fg-subtle);font-weight:500;margin-bottom:var(--space-2);}
+.principle p{font-size:13px;line-height:1.6;color:var(--fg-muted);}
+
+/* =========================================================================
+   LOGO SUITE
+   ========================================================================= */
+.logo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-6);}
+@media(max-width:900px){.logo-grid{grid-template-columns:1fr;}}
+.logo-tile{border:1px solid var(--border-default);border-radius:var(--radius-md);overflow:hidden;background:var(--bg-default);box-shadow:var(--shadow-sm);}
+.logo-stage{display:flex;align-items:center;justify-content:center;padding:var(--space-10) var(--space-6);min-height:200px;}
+.logo-stage.light{background:repeating-conic-gradient(var(--color-neutral-100) 0% 25%, var(--bg-default) 0% 50%) 50% / 24px 24px;}
+.logo-stage.navy{background:var(--color-brand-900);}
+.logo-stage svg{max-width:100%;height:auto;}
+.logo-meta{padding:var(--space-4) var(--space-5);border-top:1px solid var(--border-muted);}
+.logo-meta .fn{font-family:var(--font-mono);font-size:13px;color:var(--fg-accent);font-weight:500;}
+.logo-meta .use{font-size:13px;color:var(--fg-muted);margin-top:var(--space-1);line-height:1.5;}
+
+.note-row{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin-top:var(--space-6);}
+@media(max-width:900px){.note-row{grid-template-columns:1fr;}}
+.note{background:var(--color-brand-50);border:1px solid var(--color-brand-200);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);}
+.note h4{margin:0 0 var(--space-2);font-size:14px;color:var(--color-brand-800);}
+.note p{font-size:13px;color:var(--fg-muted);line-height:1.6;}
+.note .clearspace{display:flex;align-items:center;justify-content:center;margin-top:var(--space-3);}
+.clearspace-box{position:relative;border:1px dashed var(--color-brand-400);padding:24px;border-radius:6px;}
+.clearspace-box svg{width:64px;height:auto;display:block;}
+.clearspace-box .x{position:absolute;font-size:11px;font-weight:600;color:var(--color-brand-600);}
+.clearspace-box .x.t{top:6px;left:50%;transform:translateX(-50%);}
+.clearspace-box .x.l{left:6px;top:50%;transform:translateY(-50%);}
+
+/* do/don't */
+.dd{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-top:var(--space-6);}
+@media(max-width:900px){.dd{grid-template-columns:1fr;}}
+.dd-col{border-radius:var(--radius-md);padding:var(--space-5);border:1px solid;}
+.dd-col.do{background:var(--color-success-50);border-color:var(--color-success-200);}
+.dd-col.dont{background:var(--color-error-50);border-color:var(--color-error-200);}
+.dd-col h4{margin:0 0 var(--space-3);font-size:14px;}
+.dd-col.do h4{color:var(--color-success-700);}
+.dd-col.dont h4{color:var(--color-error-700);}
+.dd-col li{list-style:none;font-size:13px;line-height:1.7;color:var(--fg-muted);padding-left:var(--space-5);position:relative;}
+.dd-col.do li::before{content:"✓";position:absolute;left:0;color:var(--color-success-600);font-weight:700;}
+.dd-col.dont li::before{content:"✕";position:absolute;left:0;color:var(--color-error-600);font-weight:700;}
+
+/* =========================================================================
+   COLOR
+   ========================================================================= */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:var(--space-2);}
+.swatch{border:1px solid var(--border-muted);border-radius:var(--radius-md);overflow:hidden;background:var(--bg-default);}
+.swatch .chip{height:56px;}
+.swatch .meta{padding:var(--space-2) var(--space-3);}
+.swatch .tk{font-family:var(--font-mono);font-size:11px;color:var(--fg-default);font-weight:500;display:block;}
+.swatch .hex{font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);text-transform:uppercase;}
+.swatch .nm{font-size:11px;color:var(--fg-muted);display:block;margin-top:2px;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-default);border:1px solid var(--border-default);border-radius:var(--radius-md);overflow:hidden;}
+thead th{
+  background:var(--color-neutral-200);text-align:left;
+  font-size:12px;font-weight:500;letter-spacing:0.04em;color:var(--color-neutral-700);
+  padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--border-default);white-space:nowrap;
+}
+tbody td{padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--border-muted);vertical-align:top;color:var(--fg-default);}
+tbody tr:nth-child(odd){background:var(--color-neutral-100);}
+tbody tr:last-child td{border-bottom:none;}
+td .mono,th .mono{font-size:12px;}
+.dot{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;border:1px solid rgba(15,17,23,.12);}
+.two-tone{display:inline-flex;gap:2px;vertical-align:-1px;margin-right:6px;}
+.two-tone i{width:12px;height:12px;border-radius:2px;border:1px solid rgba(15,17,23,.12);}
+
+/* =========================================================================
+   TYPOGRAPHY
+   ========================================================================= */
+.type-row{display:flex;align-items:baseline;gap:var(--space-6);padding:var(--space-4) 0;border-bottom:1px solid var(--border-muted);}
+.type-row .spec{flex:0 0 200px;font-size:12px;color:var(--fg-subtle);font-family:var(--font-mono);}
+.type-row .spec b{display:block;color:var(--fg-default);font-family:var(--font-base);font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:2px;}
+.type-row .sample{flex:1;color:var(--fg-default);min-width:0;}
+.ts-display{font-size:28px;font-weight:700;line-height:1.3;letter-spacing:-0.02em;}
+.ts-h1{font-size:28px;font-weight:700;line-height:1.3;letter-spacing:-0.02em;}
+.ts-h2{font-size:22px;font-weight:600;line-height:1.35;letter-spacing:-0.01em;}
+.ts-h3{font-size:18px;font-weight:600;line-height:1.4;}
+.ts-body{font-size:14px;font-weight:400;line-height:1.57;}
+.ts-caption{font-size:12px;font-weight:400;line-height:1.5;letter-spacing:0.01em;color:var(--fg-subtle);}
+
+.font-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);}
+@media(max-width:900px){.font-pair{grid-template-columns:1fr;}}
+.font-card{border:1px solid var(--border-default);border-radius:var(--radius-md);padding:var(--space-6);background:var(--bg-default);}
+.font-card .big{font-size:48px;line-height:1.1;color:var(--fg-default);}
+.font-card .label{font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--fg-subtle);font-weight:600;margin-bottom:var(--space-3);}
+.font-card .specimen{margin-top:var(--space-4);font-size:13px;color:var(--fg-muted);}
+
+/* =========================================================================
+   TOKENS — radius / shadow / spacing / motion / z
+   ========================================================================= */
+.tok-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-4);}
+.tok{border:1px solid var(--border-default);border-radius:var(--radius-md);padding:var(--space-4);background:var(--bg-default);text-align:center;}
+.tok .demo{height:72px;display:flex;align-items:center;justify-content:center;margin-bottom:var(--space-3);}
+.tok .rbox{width:84px;height:60px;background:var(--color-brand-100);border:2px solid var(--color-brand-600);}
+.tok .sbox{width:84px;height:60px;background:var(--bg-default);border:1px solid var(--border-muted);}
+.tok .tk{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--fg-default);}
+.tok .v{font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);}
+.space-row{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-2) 0;}
+.space-row .lab{flex:0 0 150px;font-family:var(--font-mono);font-size:12px;color:var(--fg-default);}
+.space-row .bar{height:16px;background:var(--color-brand-500);border-radius:2px;}
+.motion-row{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:1px solid var(--border-muted);}
+.motion-row .lab{flex:0 0 200px;font-family:var(--font-mono);font-size:12px;color:var(--fg-default);}
+.motion-row .track{flex:1;height:8px;background:var(--color-neutral-200);border-radius:var(--radius-pill);position:relative;overflow:hidden;}
+.motion-row .track i{position:absolute;top:0;left:0;height:100%;width:30%;background:var(--color-brand-600);border-radius:var(--radius-pill);animation:slide 2.4s infinite;}
+.motion-row.f i{animation-duration:.15s;animation-iteration-count:infinite;animation-name:slide;animation-timing-function:var(--easing-out);}
+@keyframes slide{0%{left:-30%}50%{left:100%}100%{left:100%}}
+.z-ladder{display:flex;flex-direction:column;gap:6px;}
+.z-ladder .lvl{display:flex;align-items:center;gap:var(--space-3);}
+.z-ladder .swatch-z{height:32px;background:var(--color-brand-600);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);}
+.z-ladder .lab{font-family:var(--font-mono);font-size:12px;color:var(--fg-default);flex:0 0 220px;}
+
+/* =========================================================================
+   COMPONENTS — real rendered examples
+   ========================================================================= */
+.demo-block{border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-default);padding:var(--space-6);box-shadow:var(--shadow-sm);}
+.demo-row{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center;}
+
+/* buttons */
+.btn{
+  font-family:var(--font-base);font-size:14px;font-weight:500;line-height:1;
+  padding:10px 20px;border-radius:var(--radius-md);border:none;cursor:pointer;
+  display:inline-flex;align-items:center;gap:var(--space-2);
+  transition:background var(--duration-normal) var(--easing-out),border-color var(--duration-normal) var(--easing-out);
+}
+.btn-primary{background:var(--bg-accent-emphasis);color:var(--fg-onEmphasis);}
+.btn-primary:hover{background:var(--bg-accent-muted);}
+.btn-primary:disabled{background:var(--color-brand-300);color:#fff;cursor:not-allowed;}
+.btn-secondary{background:var(--bg-default);color:var(--fg-accent);border:1.5px solid var(--border-accent);}
+.btn-secondary:hover{background:var(--color-brand-100);border-color:var(--color-brand-700);}
+.btn-secondary:disabled{background:#fff;color:var(--color-neutral-400);border-color:var(--color-neutral-300);cursor:not-allowed;}
+.btn-ghost{background:transparent;color:var(--fg-accent);}
+.btn-ghost:hover{background:var(--color-brand-100);}
+.btn-ghost:disabled{color:var(--color-neutral-400);cursor:not-allowed;}
+.btn-danger{background:var(--color-error-500);color:#fff;}
+.btn-danger:hover{background:var(--color-error-700);}
+.btn-danger:disabled{background:var(--color-error-200);color:#fff;cursor:not-allowed;}
+
+/* badges */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:500;line-height:1.4;
+  padding:4px 10px;border-radius:var(--radius-sm);border:1px solid;
+}
+.badge .d{width:6px;height:6px;border-radius:50%;}
+.badge-pending{background:var(--color-warning-100);color:var(--color-warning-700);border-color:var(--color-warning-200);}
+.badge-pending .d{background:var(--color-warning-500);}
+.badge-inprogress{background:var(--color-info-100);color:var(--color-info-600);border-color:var(--color-info-200);}
+.badge-inprogress .d{background:var(--color-info-500);}
+.badge-done{background:var(--color-success-100);color:var(--color-success-700);border-color:var(--color-success-200);}
+.badge-done .d{background:var(--color-success-500);}
+.badge-draft{background:var(--color-neutral-200);color:var(--color-neutral-700);border-color:var(--color-neutral-300);}
+.badge-draft .d{background:var(--color-neutral-500);}
+.badge-scheduled{background:var(--color-brand-200);color:var(--color-brand-800);border-color:var(--color-brand-300);}
+.badge-scheduled .d{background:var(--color-brand-600);}
+.badge-urgent{background:var(--color-error-100);color:var(--color-error-700);border-color:var(--color-error-200);}
+.badge-urgent .d{background:var(--color-error-500);}
+.badge-overdue{background:var(--color-error-50);color:var(--color-error-600);border-color:var(--color-error-200);}
+.badge-overdue .d{background:var(--color-error-500);}
+
+.overlay-demo{display:flex;align-items:center;gap:var(--space-2);}
+
+/* inputs */
+.field{max-width:360px;}
+.field label{display:block;font-size:12px;font-weight:500;letter-spacing:0.04em;color:var(--color-neutral-700);margin-bottom:var(--space-1);}
+.field .input{
+  width:100%;height:44px;padding:10px 12px 10px 16px;
+  border:1.5px solid var(--border-default);border-radius:var(--radius-md);
+  font-family:var(--font-base);font-size:14px;color:var(--fg-default);background:#fff;
+}
+.field .input::placeholder{color:var(--fg-subtle);}
+.field .input:focus{outline:none;border-color:var(--border-accent);box-shadow:0 0 0 3px var(--color-brand-200);}
+.field .input.err{border-color:var(--color-error-500);box-shadow:0 0 0 3px var(--color-error-100);}
+.field .help{font-size:12px;color:var(--fg-subtle);margin-top:var(--space-1);}
+.field .errmsg{font-size:12px;color:var(--color-error-600);margin-top:var(--space-1);}
+.search-input{position:relative;max-width:360px;}
+.search-input input{
+  width:100%;height:40px;padding:0 16px 0 40px;
+  border:1.5px solid var(--border-default);border-radius:var(--radius-pill);
+  font-family:var(--font-base);font-size:14px;color:var(--fg-default);background:#fff;
+}
+.search-input input:focus{outline:none;border-color:var(--border-accent);box-shadow:0 0 0 3px var(--color-brand-200);}
+.search-input .mg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--fg-subtle);font-size:15px;}
+/* combobox */
+.combo{max-width:360px;position:relative;}
+.combo-pop{
+  margin-top:var(--space-1);border:1px solid var(--border-default);border-radius:var(--radius-md);
+  background:#fff;box-shadow:var(--shadow-md);overflow:hidden;max-width:360px;
+}
+.combo-pop .opt{height:40px;display:flex;align-items:center;padding:0 16px;font-size:14px;color:var(--fg-default);cursor:pointer;}
+.combo-pop .opt:hover{background:var(--color-brand-50);}
+.combo-pop .opt.sel{background:var(--color-brand-100);color:var(--fg-accent);}
+
+/* sample cards */
+.sample-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4);}
+@media(max-width:900px){.sample-cards{grid-template-columns:1fr;}}
+.scard{background:var(--bg-default);border:1px solid var(--border-default);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);padding:var(--space-5);}
+.scard.unread{border-left:4px solid var(--color-brand-600);}
+.scard .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-2);}
+.scard .top time{font-size:12px;color:var(--fg-subtle);font-variant-numeric:tabular-nums;}
+.scard h4{margin:0 0 4px;font-size:16px;}
+.scard.unread h4{font-weight:600;}
+.scard p{font-size:14px;color:var(--fg-muted);line-height:1.5;}
+.scard .foot{font-size:12px;color:var(--fg-subtle);margin-top:var(--space-3);font-variant-numeric:tabular-nums;}
+.scard .unit{font-family:var(--font-mono);font-weight:600;color:var(--fg-default);}
+
+/* data table */
+.dt-wrap{border:1px solid var(--border-default);border-radius:var(--radius-md);overflow:hidden;}
+.dt-toolbar{display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--border-muted);background:var(--bg-default);gap:var(--space-4);flex-wrap:wrap;}
+.dt-toolbar .count{font-size:12px;color:var(--fg-subtle);font-variant-numeric:tabular-nums;}
+table.dt{border:none;border-radius:0;}
+table.dt td,table.dt th{padding:0 var(--space-4);height:48px;}
+table.dt thead th{height:48px;}
+table.dt .num{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+table.dt .unit{font-family:var(--font-mono);font-weight:600;}
+table.dt .center{text-align:center;}
+table.dt tbody tr.overdue-row{background:var(--color-error-50);}
+table.dt tbody tr:hover{background:var(--color-brand-50);}
+table.dt tbody tr.overdue-row:hover{background:var(--color-error-100);}
+.row-actions{display:flex;gap:var(--space-2);justify-content:flex-end;}
+.btn-xs{font-size:12px;padding:6px 10px;border-radius:var(--radius-sm);}
+
+/* toasts */
+.toasts{display:flex;flex-direction:column;gap:var(--space-3);max-width:380px;}
+.toast{
+  display:flex;gap:var(--space-3);align-items:flex-start;
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-overlay);
+  padding:var(--space-4) var(--space-4) var(--space-4) var(--space-3);
+  border-left:4px solid;position:relative;
+}
+.toast .ic{font-size:18px;line-height:1;flex:0 0 auto;margin-top:1px;}
+.toast .tt{font-size:14px;font-weight:500;color:var(--fg-default);}
+.toast .ds{font-size:12px;color:var(--fg-muted);margin-top:2px;line-height:1.5;}
+.toast .x{position:absolute;top:10px;right:12px;color:var(--fg-subtle);font-size:14px;cursor:pointer;}
+.toast.success{background:var(--color-success-50);border-left-color:var(--color-success-500);}
+.toast.success .ic{color:var(--color-success-600);}
+.toast.warning{background:var(--color-warning-50);border-left-color:var(--color-warning-500);}
+.toast.warning .ic{color:var(--color-warning-600);}
+.toast.error{background:var(--color-error-50);border-left-color:var(--color-error-500);}
+.toast.error .ic{color:var(--color-error-600);}
+.toast .persist{font-size:11px;color:var(--fg-subtle);margin-top:6px;}
+
+/* annotation chips */
+.ann{display:inline-block;font-size:12px;background:var(--color-brand-50);border:1px solid var(--color-brand-200);color:var(--color-brand-800);border-radius:var(--radius-sm);padding:2px 8px;margin:2px 0;}
+.callout{background:var(--color-warning-50);border:1px solid var(--color-warning-200);border-radius:var(--radius-md);padding:var(--space-4) var(--space-5);font-size:13px;color:var(--color-warning-700);line-height:1.6;}
+.callout b{color:var(--color-warning-700);}
+.callout.info{background:var(--color-info-50);border-color:var(--color-info-200);color:var(--color-info-600);}
+.callout.info b{color:var(--color-info-600);}
+
+/* pitfalls */
+table.pit td:first-child{white-space:nowrap;font-weight:600;color:var(--fg-default);}
+table.pit .src{font-size:11px;color:var(--fg-subtle);}
+table.pit .guard{color:var(--color-success-700);}
+
+/* footer */
+.site-foot{background:var(--color-brand-900);color:var(--color-brand-200);padding:var(--space-12) var(--space-8);margin-top:var(--space-16);}
+.site-foot .inner{max-width:1100px;margin:0 auto;}
+.site-foot svg{width:150px;height:auto;margin-bottom:var(--space-5);}
+.site-foot h4{color:#fff;font-size:14px;margin:0 0 var(--space-2);}
+.site-foot .meta{font-size:13px;line-height:1.8;color:var(--color-brand-300);}
+.site-foot a{color:var(--color-brand-300);text-decoration:underline;}
+.site-foot .links{margin-top:var(--space-5);font-size:13px;display:flex;flex-wrap:wrap;gap:var(--space-4);}
+.site-foot .vbadge{display:inline-block;font-size:12px;border:1px solid var(--color-brand-700);color:var(--color-brand-200);border-radius:var(--radius-pill);padding:3px 12px;margin-top:var(--space-4);}
+
+@media(max-width:760px){
+  .sidebar{display:none;}
+  .content{padding:var(--space-6) var(--space-4) var(--space-16);}
+  .page-header{padding:var(--space-4);}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;}
+  html{scroll-behavior:auto;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <!-- linkju-reversed (on the dark sidebar, per CIS §7) — horizontal-style reversed lockup -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 160" role="img" aria-label="Linkju 連居">
+        <g transform="translate(8 24) scale(0.92)">
+          <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#6AAAF0" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+          <line x1="40" y1="46" x2="88" y2="46" stroke="#6AAAF0" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="40" cy="46" r="7.5" fill="#FFFFFF"/>
+          <circle cx="88" cy="46" r="7.5" fill="#6AAAF0"/>
+        </g>
+        <line x1="146" y1="40" x2="146" y2="120" stroke="#4A5568" stroke-width="2"/>
+        <text x="170" y="78" font-family="'Noto Sans TC','PingFang TC',sans-serif" font-size="52" font-weight="600" letter-spacing="4" fill="#FFFFFF">連居</text>
+        <g transform="translate(168 86) scale(0.46)">
+          <g fill="none" stroke="#6AAAF0" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M30 44 L30 116 L68 116"/><path d="M92 72 L92 116"/>
+            <path d="M120 116 L120 72 M120 84 Q120 72 138 72 Q156 72 156 90 L156 116"/>
+            <path d="M182 44 L182 116 M182 95 L208 72 M190 89 L214 116"/>
+            <path d="M246 72 L246 124 Q246 140 230 140"/>
+            <path d="M276 72 L276 100 Q276 116 294 116 Q312 116 312 100 L312 72 M312 72 L312 116"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="nav-label">Design System &amp; CIS</div>
+      <a href="#cover" class="active"><span class="ix">◆</span> 封面 / Brand</a>
+      <a href="#logo"><span class="ix">❖</span> Logo 套組</a>
+      <a href="#color"><span class="ix">●</span> 色彩 Color</a>
+      <a href="#type"><span class="ix">Aa</span> 字體 Typography</a>
+      <a href="#tokens"><span class="ix">▦</span> Tokens</a>
+      <a href="#components"><span class="ix">▣</span> 元件 Components</a>
+      <a href="#trust"><span class="ix">⛨</span> 刻意避免什麼</a>
+    </nav>
+    <div class="sidebar-foot">
+      Linkju 連居<br>Design System v1.0 · CIS v0.1<br>2026年6月14日 · v0 draft
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+    <div class="page-header">
+      <h1>Linkju 連居 — 設計系統與品牌識別</h1>
+      <span class="sub">Living styleguide · v0 draft for founder review · 2026/06/14</span>
+    </div>
+    <div class="content">
+
+      <!-- ================= 1. COVER / BRAND ================= -->
+      <section id="cover">
+        <div class="cover">
+          <div class="lockup">
+            <!-- linkju-primary.svg embedded inline -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 340" role="img" aria-label="Linkju 連居 primary logo lockup">
+              <g transform="translate(116 16)">
+                <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#0D2137" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#1D6BC7" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="40" y1="46" x2="88" y2="46" stroke="#1D6BC7" stroke-width="9" stroke-linecap="round"/>
+                <circle cx="40" cy="46" r="7.5" fill="#0D2137"/>
+                <circle cx="88" cy="46" r="7.5" fill="#1D6BC7"/>
+              </g>
+              <text x="180" y="208" text-anchor="middle" font-family="'Noto Sans TC','PingFang TC',sans-serif" font-size="64" font-weight="600" letter-spacing="6" fill="#0D2137">連居</text>
+              <g transform="translate(108 240) scale(0.55)">
+                <g fill="none" stroke="#0D2137" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M30 44 L30 116 L68 116"/><path d="M92 72 L92 116"/>
+                  <path d="M120 116 L120 72 M120 84 Q120 72 138 72 Q156 72 156 90 L156 116"/>
+                  <path d="M182 44 L182 116 M182 95 L208 72 M190 89 L214 116"/>
+                  <path d="M246 72 L246 124 Q246 140 230 140"/>
+                  <path d="M276 72 L276 100 Q276 116 294 116 Q312 116 312 100 L312 72 M312 72 L312 116"/>
+                </g>
+                <circle cx="92" cy="52" r="7" fill="#1D6BC7"/><circle cx="246" cy="52" r="7" fill="#1D6BC7"/>
+              </g>
+            </svg>
+          </div>
+          <h2>住宅社區的平靜基礎設施</h2>
+          <p class="pos">Calm infrastructure for residential communities — 連結社區，安居有序。管理員的作業系統，住戶的乾淨體驗。</p>
+          <p class="tag">值得信賴、專業、不浮誇。深藍調性，零廣告，狀態誠實。</p>
+          <div class="pill-list">
+            <span>Navy / Calm</span><span>Manager-First Density</span><span>WCAG AA</span>
+            <span>繁體中文（台灣）</span><span>零廣告</span><span>無漸層 · 純平塗</span>
+          </div>
+        </div>
+
+        <h3>五大設計原則 — Design Principles (§1.1–1.5)</h3>
+        <div class="principles">
+          <div class="principle">
+            <div class="n">§1.1</div>
+            <h4>平靜基礎設施</h4>
+            <div class="en">Calm Infrastructure</div>
+            <p>是基礎設施，不是娛樂。每個視覺決策都在降低認知負擔，而非爭奪注意力。大量留白、清晰層級、克制用色。無廣告是設計約束，不只是商業模式。</p>
+          </div>
+          <div class="principle">
+            <div class="n">§1.2</div>
+            <h4>管理員優先密度</h4>
+            <div class="en">Manager-First Density</div>
+            <p>Web 後台是專業作業工具。資料表單 fold 以上顯示 15–20 列、篩選即時可達、動作一鍵可達。漸進揭露：常用 20% 動作就地呈現。「井然有序、值得信賴」才對。</p>
+          </div>
+          <div class="principle">
+            <div class="n">§1.3</div>
+            <h4>住戶簡潔</h4>
+            <div class="en">Resident Simplicity</div>
+            <p>住戶不是付費方，卻是衡量指標。55 歲首次使用者不看說明就能完成領取。每畫面一個主要動作、底部固定導覽、推播先回答「我該做什麼」。</p>
+          </div>
+          <div class="principle">
+            <div class="n">§1.4</div>
+            <h4>透明賺取信任</h4>
+            <div class="en">Earned Trust Through Transparency</div>
+            <p>台灣住宅市場有信任赤字。隱私可見、狀態誠實（精確時間戳，不用模糊「處理中」）、絕不隱惡——失敗清楚顯示錯誤態，而非靜默失敗。</p>
+          </div>
+          <div class="principle">
+            <div class="n">§1.5</div>
+            <h4>台灣專業情境</h4>
+            <div class="en">Taiwanese Professional Context</div>
+            <p>主要買方是 45–65 歲主任委員。繁體中文為主、系統訊息用敬語「您」、保守視覺語言（無漸層、無到處的 pill、無 Gen-Z 色盤）。日期 <span class="mono">2026年6月14日</span> / <span class="mono">06/14</span>。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. LOGO SUITE ================= -->
+      <section id="logo">
+        <div class="sec-head">
+          <div class="sec-num">02 — Logo 套組</div>
+          <h2>標誌組合 Logo Suite</h2>
+          <p>圖標由兩座以屋脊相連的房屋形構成：兩戶並列的「居 / 鄰居」，以一道連結橫梁相連＝「連 (link)」。雙色同色系傳遞「同屬一個社區」。純幾何、無漸層、無陰影、開放底部留白。所有 6 個資產為手繪 SVG v0 草稿，待精修。</p>
+        </div>
+
+        <div class="logo-grid">
+          <!-- primary -->
+          <div class="logo-tile">
+            <div class="logo-stage light">
+              <svg xmlns="http://www.w3.org/2000/svg" width="200" viewBox="0 0 360 340" role="img" aria-label="Linkju primary">
+                <g transform="translate(116 16)">
+                  <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#0D2137" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#1D6BC7" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <line x1="40" y1="46" x2="88" y2="46" stroke="#1D6BC7" stroke-width="9" stroke-linecap="round"/>
+                  <circle cx="40" cy="46" r="7.5" fill="#0D2137"/><circle cx="88" cy="46" r="7.5" fill="#1D6BC7"/>
+                </g>
+                <text x="180" y="208" text-anchor="middle" font-family="'Noto Sans TC','PingFang TC',sans-serif" font-size="64" font-weight="600" letter-spacing="6" fill="#0D2137">連居</text>
+                <g transform="translate(108 240) scale(0.55)"><g fill="none" stroke="#0D2137" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><path d="M30 44 L30 116 L68 116"/><path d="M92 72 L92 116"/><path d="M120 116 L120 72 M120 84 Q120 72 138 72 Q156 72 156 90 L156 116"/><path d="M182 44 L182 116 M182 95 L208 72 M190 89 L214 116"/><path d="M246 72 L246 124 Q246 140 230 140"/><path d="M276 72 L276 100 Q276 116 294 116 Q312 116 312 100 L312 72 M312 72 L312 116"/></g><circle cx="92" cy="52" r="7" fill="#1D6BC7"/><circle cx="246" cy="52" r="7" fill="#1D6BC7"/></g>
+              </svg>
+            </div>
+            <div class="logo-meta"><div class="fn">linkju-primary.svg</div><div class="use"><b>主要直式組合。</b>預設首選——登入頁、關於頁、簡報封面、印刷品。淺色背景，雙色版。</div></div>
+          </div>
+
+          <!-- horizontal -->
+          <div class="logo-tile">
+            <div class="logo-stage light">
+              <svg xmlns="http://www.w3.org/2000/svg" width="300" viewBox="0 0 460 160" role="img" aria-label="Linkju horizontal">
+                <g transform="translate(8 24) scale(0.92)">
+                  <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#0D2137" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#1D6BC7" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <line x1="40" y1="46" x2="88" y2="46" stroke="#1D6BC7" stroke-width="9" stroke-linecap="round"/>
+                  <circle cx="40" cy="46" r="7.5" fill="#0D2137"/><circle cx="88" cy="46" r="7.5" fill="#1D6BC7"/>
+                </g>
+                <line x1="146" y1="40" x2="146" y2="120" stroke="#E2E8F0" stroke-width="2"/>
+                <text x="170" y="78" font-family="'Noto Sans TC','PingFang TC',sans-serif" font-size="52" font-weight="600" letter-spacing="4" fill="#0D2137">連居</text>
+                <g transform="translate(168 86) scale(0.46)"><g fill="none" stroke="#1D6BC7" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><path d="M30 44 L30 116 L68 116"/><path d="M92 72 L92 116"/><path d="M120 116 L120 72 M120 84 Q120 72 138 72 Q156 72 156 90 L156 116"/><path d="M182 44 L182 116 M182 95 L208 72 M190 89 L214 116"/><path d="M246 72 L246 124 Q246 140 230 140"/><path d="M276 72 L276 100 Q276 116 294 116 Q312 116 312 100 L312 72 M312 72 L312 116"/></g></g>
+              </svg>
+            </div>
+            <div class="logo-meta"><div class="fn">linkju-horizontal.svg</div><div class="use"><b>橫式組合。</b>網頁頁首、導覽列、email signature、名片橫幅。圖標 + 分隔線 + 連居/Linkju。</div></div>
+          </div>
+
+          <!-- mark -->
+          <div class="logo-tile">
+            <div class="logo-stage light">
+              <svg xmlns="http://www.w3.org/2000/svg" width="96" viewBox="0 0 128 128" role="img" aria-label="Linkju mark">
+                <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#0D2137" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#1D6BC7" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="40" y1="46" x2="88" y2="46" stroke="#1D6BC7" stroke-width="9" stroke-linecap="round"/>
+                <circle cx="40" cy="46" r="7.5" fill="#0D2137"/><circle cx="88" cy="46" r="7.5" fill="#1D6BC7"/>
+              </svg>
+            </div>
+            <div class="logo-meta"><div class="fn">linkju-mark.svg</div><div class="use"><b>純圖標。</b>favicon、社群頭像、載入畫面、空間受限處。16px 仍可辨識雙屋輪廓。</div></div>
+          </div>
+
+          <!-- monochrome -->
+          <div class="logo-tile">
+            <div class="logo-stage light">
+              <svg xmlns="http://www.w3.org/2000/svg" width="200" viewBox="0 0 360 340" role="img" aria-label="Linkju monochrome">
+                <g transform="translate(116 16)">
+                  <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#0D2137" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#0D2137" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <line x1="40" y1="46" x2="88" y2="46" stroke="#0D2137" stroke-width="9" stroke-linecap="round"/>
+                  <circle cx="40" cy="46" r="7.5" fill="#0D2137"/><circle cx="88" cy="46" r="7.5" fill="#0D2137"/>
+                </g>
+                <text x="180" y="208" text-anchor="middle" font-family="'Noto Sans TC','PingFang TC',sans-serif" font-size="64" font-weight="600" letter-spacing="6" fill="#0D2137">連居</text>
+                <g transform="translate(108 240) scale(0.55)"><g fill="none" stroke="#0D2137" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><path d="M30 44 L30 116 L68 116"/><path d="M92 72 L92 116"/><path d="M120 116 L120 72 M120 84 Q120 72 138 72 Q156 72 156 90 L156 116"/><path d="M182 44 L182 116 M182 95 L208 72 M190 89 L214 116"/><path d="M246 72 L246 124 Q246 140 230 140"/><path d="M276 72 L276 100 Q276 116 294 116 Q312 116 312 100 L312 72 M312 72 L312 116"/></g><circle cx="92" cy="52" r="7" fill="#0D2137"/><circle cx="246" cy="52" r="7" fill="#0D2137"/></g>
+              </svg>
+            </div>
+            <div class="logo-meta"><div class="fn">linkju-monochrome.svg</div><div class="use"><b>單色（深藍）。</b>全 <span class="mono">brand-900</span>。單色印刷、傳真、蓋章、浮水印、低彩裝置。</div></div>
+          </div>
+
+          <!-- reversed (on navy) -->
+          <div class="logo-tile">
+            <div class="logo-stage navy">
+              <svg xmlns="http://www.w3.org/2000/svg" width="200" viewBox="0 0 360 340" role="img" aria-label="Linkju reversed on navy">
+                <rect width="360" height="340" rx="16" fill="#0D2137"/>
+                <g transform="translate(116 32)">
+                  <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#6AAAF0" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <line x1="40" y1="46" x2="88" y2="46" stroke="#6AAAF0" stroke-width="9" stroke-linecap="round"/>
+                  <circle cx="40" cy="46" r="7.5" fill="#FFFFFF"/><circle cx="88" cy="46" r="7.5" fill="#6AAAF0"/>
+                </g>
+                <text x="180" y="224" text-anchor="middle" font-family="'Noto Sans TC','PingFang TC',sans-serif" font-size="64" font-weight="600" letter-spacing="6" fill="#FFFFFF">連居</text>
+                <g transform="translate(108 256) scale(0.55)"><g fill="none" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><path d="M30 44 L30 116 L68 116"/><path d="M92 72 L92 116"/><path d="M120 116 L120 72 M120 84 Q120 72 138 72 Q156 72 156 90 L156 116"/><path d="M182 44 L182 116 M182 95 L208 72 M190 89 L214 116"/><path d="M246 72 L246 124 Q246 140 230 140"/><path d="M276 72 L276 100 Q276 116 294 116 Q312 116 312 100 L312 72 M312 72 L312 116"/></g><circle cx="92" cy="52" r="7" fill="#6AAAF0"/><circle cx="246" cy="52" r="7" fill="#6AAAF0"/></g>
+              </svg>
+            </div>
+            <div class="logo-meta"><div class="fn">linkju-reversed.svg</div><div class="use"><b>反白（深藍底）。</b>深色側欄、App 啟動頁、頁尾深底區。白筆畫 + <span class="mono">brand-400</span> 輔色確保對比。</div></div>
+          </div>
+
+          <!-- app icon (on navy) -->
+          <div class="logo-tile">
+            <div class="logo-stage navy">
+              <svg xmlns="http://www.w3.org/2000/svg" width="140" viewBox="0 0 512 512" role="img" aria-label="Linkju app icon">
+                <rect width="512" height="512" rx="115" fill="#0D2137"/>
+                <g transform="translate(256 256) scale(3.4) translate(-64 -68)">
+                  <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#FFFFFF" stroke-width="8.5" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#6AAAF0" stroke-width="8.5" stroke-linejoin="round" stroke-linecap="round"/>
+                  <line x1="40" y1="46" x2="88" y2="46" stroke="#6AAAF0" stroke-width="8.5" stroke-linecap="round"/>
+                  <circle cx="40" cy="46" r="7" fill="#FFFFFF"/><circle cx="88" cy="46" r="7" fill="#6AAAF0"/>
+                </g>
+              </svg>
+            </div>
+            <div class="logo-meta"><div class="fn">linkju-app-icon.svg</div><div class="use"><b>App 圖標（方形）。</b>iOS / Android home screen、社群大頭貼。圓角方形深藍底 + 反白圖標，512×512，22.5% 圓角近似 iOS 超橢圓。</div></div>
+          </div>
+        </div>
+
+        <h3>清空間與最小尺寸 — Clear Space &amp; Minimum Size</h3>
+        <div class="note-row">
+          <div class="note">
+            <h4>清空間 = X</h4>
+            <p>四周淨空 ≥ <b>X</b>（X = 圖標中單一房屋寬度）。主要/橫式組合四周留 X；純圖標留 ½ 屋寬；頁首受限處可降至 ½X，不得更小。淨空內不得放置文字或圖形。</p>
+            <div class="clearspace">
+              <div class="clearspace-box">
+                <span class="x t">X</span><span class="x l">X</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="mark clearspace">
+                  <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#0D2137" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#1D6BC7" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+                  <line x1="40" y1="46" x2="88" y2="46" stroke="#1D6BC7" stroke-width="9" stroke-linecap="round"/>
+                  <circle cx="40" cy="46" r="7.5" fill="#0D2137"/><circle cx="88" cy="46" r="7.5" fill="#1D6BC7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="note">
+            <h4>最小尺寸 — 數位</h4>
+            <p>主要直式 ≥ <b>96px</b>（低於改用純圖標）。橫式 ≥ <b>160px</b>。純圖標 ≥ <b>24px</b>（最小單元）。Favicon 用 <span class="mono">linkju-mark.svg</span>，16px 仍可辨識輪廓（節點圓點會合併，可接受）。</p>
+            <p style="margin-top:12px;">中文「連居」字級在任何組合中 <b>不得小於 14px</b>（CJK 最小可讀字級，design-system §3.3）。</p>
+          </div>
+          <div class="note">
+            <h4>最小尺寸 — 印刷</h4>
+            <p>主要直式 ≥ <b>24mm</b>。橫式 ≥ <b>32mm</b>。純圖標 ≥ <b>8mm</b>。App 圖標由系統規範縮放（iOS 29pt / Android 48dp 起）。</p>
+            <p style="margin-top:12px;">標誌承載辨識資訊的色彩對背景至少達 <b>3:1</b>（UI），字標達 <b>4.5:1</b>。<span class="mono">brand-400</span> 僅可用於深藍底，不得置於白底承載文字。</p>
+          </div>
+        </div>
+
+        <div class="dd">
+          <div class="dd-col do">
+            <h4>✅ Do</h4>
+            <ul>
+              <li>使用提供的 SVG 原始檔，等比例縮放</li>
+              <li>維持清空間與最小尺寸</li>
+              <li>深色背景一律使用反白版</li>
+              <li>單色印刷／傳真／蓋章使用單色（深藍）版</li>
+              <li>雙色版只用在淺色背景</li>
+              <li>圖標、中文字標、拉丁字標維持原組合鎖定 (locked-up)</li>
+            </ul>
+          </div>
+          <div class="dd-col dont">
+            <h4>❌ Don't</h4>
+            <ul>
+              <li>不更改標誌顏色（不得換成紅、綠、黃、灰或任何非 brand 色）</li>
+              <li>不加漸層、陰影、外光暈、描邊、3D、倒影</li>
+              <li>不旋轉、不傾斜、不鏡像、不非等比拉伸</li>
+              <li>不重新排列元素、不拆開「連居」與「Linkju」</li>
+              <li>不替換字型、不以簡體渲染「連居」</li>
+              <li>不把雙色版放在深藍底（對比不足，該用反白版）</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. COLOR ================= -->
+      <section id="color">
+        <div class="sec-head">
+          <div class="sec-num">03 — 色彩</div>
+          <h2>色彩系統 Color</h2>
+          <p>深藍 (navy) 品牌色階為核心。三層 token 模型：primitive（原始 hex）→ semantic（角色/意圖）→ component。本系統嚴格沿用既有色票，不另創品牌色。所有承載文字的配對通過 WCAG 2.1 AA（4.5:1 內文 / 3:1 大字與 UI 元件）。</p>
+        </div>
+
+        <h3>品牌色階 Brand Palette — navy 900 → 50</h3>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#0D2137"></div><div class="meta"><span class="tk">brand-900</span><span class="hex">#0D2137</span><span class="nm">Navy Deep · 主要文字</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#14375E"></div><div class="meta"><span class="tk">brand-800</span><span class="hex">#14375E</span><span class="nm">Navy · active nav</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#1A5094"></div><div class="meta"><span class="tk">brand-700</span><span class="hex">#1A5094</span><span class="nm">Blue Dark · 連結文字</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#1D6BC7"></div><div class="meta"><span class="tk">brand-600</span><span class="hex">#1D6BC7</span><span class="nm">Blue · primary 按鈕</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#3D87E0"></div><div class="meta"><span class="tk">brand-500</span><span class="hex">#3D87E0</span><span class="nm">Blue Mid · 互動圖標</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#6AAAF0"></div><div class="meta"><span class="tk">brand-400</span><span class="hex">#6AAAF0</span><span class="nm">Blue Light · 深底輔色</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#A3CCFA"></div><div class="meta"><span class="tk">brand-300</span><span class="hex">#A3CCFA</span><span class="nm">Sky · focus ring</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#D1E8FD"></div><div class="meta"><span class="tk">brand-200</span><span class="hex">#D1E8FD</span><span class="nm">Sky Light · 選取列</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#EBF4FF"></div><div class="meta"><span class="tk">brand-100</span><span class="hex">#EBF4FF</span><span class="nm">Cloud · 頁背景</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#F5F9FF"></div><div class="meta"><span class="tk">brand-50</span><span class="hex">#F5F9FF</span><span class="nm">White Blue · 卡片</span></div></div>
+        </div>
+
+        <h3>中性色階 Neutral Palette — 950 → 50</h3>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#0F1117"></div><div class="meta"><span class="tk">neutral-950</span><span class="hex">#0F1117</span><span class="nm">Ink · 保留</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#1C1F26"></div><div class="meta"><span class="tk">neutral-900</span><span class="hex">#1C1F26</span><span class="nm">Charcoal · 內文</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#2E3441"></div><div class="meta"><span class="tk">neutral-800</span><span class="hex">#2E3441</span><span class="nm">Dark Gray · 標題</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#4A5568"></div><div class="meta"><span class="tk">neutral-700</span><span class="hex">#4A5568</span><span class="nm">Gray · placeholder</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#718096"></div><div class="meta"><span class="tk">neutral-600</span><span class="hex">#718096</span><span class="nm">Gray Mid · caption</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#A0AEC0"></div><div class="meta"><span class="tk">neutral-500</span><span class="hex">#A0AEC0</span><span class="nm">Gray Light · 僅分隔線</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#CBD5E0"></div><div class="meta"><span class="tk">neutral-400</span><span class="hex">#CBD5E0</span><span class="nm">Silver · 邊框</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#E2E8F0"></div><div class="meta"><span class="tk">neutral-300</span><span class="hex">#E2E8F0</span><span class="nm">Mist · input 邊框</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#EDF2F7"></div><div class="meta"><span class="tk">neutral-200</span><span class="hex">#EDF2F7</span><span class="nm">Fog · 交錯列</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#F7FAFC"></div><div class="meta"><span class="tk">neutral-100</span><span class="hex">#F7FAFC</span><span class="nm">Near White · 頁背景</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid #E2E8F0"></div><div class="meta"><span class="tk">neutral-50</span><span class="hex">#FFFFFF</span><span class="nm">White · 卡片表面</span></div></div>
+        </div>
+
+        <h3>狀態色 Status Colors — success / warning / error / info</h3>
+        <h4 style="margin-top:8px;color:var(--color-success-700)">Success 成功</h4>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#1A6B3C"></div><div class="meta"><span class="tk">success-700</span><span class="hex">#1A6B3C</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#22863A"></div><div class="meta"><span class="tk">success-600</span><span class="hex">#22863A</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#28A745"></div><div class="meta"><span class="tk">success-500</span><span class="hex">#28A745</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#C3E6CB"></div><div class="meta"><span class="tk">success-200</span><span class="hex">#C3E6CB</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#D4EDDA"></div><div class="meta"><span class="tk">success-100</span><span class="hex">#D4EDDA</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#EDF7F0"></div><div class="meta"><span class="tk">success-50</span><span class="hex">#EDF7F0</span></div></div>
+        </div>
+        <h4 style="color:var(--color-warning-700)">Warning 警告 — 待處理 (OPEN) 用此色族</h4>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#7A4F0D"></div><div class="meta"><span class="tk">warning-700</span><span class="hex">#7A4F0D</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#B06B0F"></div><div class="meta"><span class="tk">warning-600</span><span class="hex">#B06B0F</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#E08A14"></div><div class="meta"><span class="tk">warning-500</span><span class="hex">#E08A14</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#FDDBA0"></div><div class="meta"><span class="tk">warning-200</span><span class="hex">#FDDBA0</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#FEF3CD"></div><div class="meta"><span class="tk">warning-100</span><span class="hex">#FEF3CD</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#FFFBF0"></div><div class="meta"><span class="tk">warning-50</span><span class="hex">#FFFBF0</span></div></div>
+        </div>
+        <h4 style="color:var(--color-error-700)">Error / Danger 錯誤 — 逾期 overlay 用此色族</h4>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#721C24"></div><div class="meta"><span class="tk">error-700</span><span class="hex">#721C24</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#A41C2A"></div><div class="meta"><span class="tk">error-600</span><span class="hex">#A41C2A</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#DC3545"></div><div class="meta"><span class="tk">error-500</span><span class="hex">#DC3545</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#F5C6CB"></div><div class="meta"><span class="tk">error-200</span><span class="hex">#F5C6CB</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#F8D7DA"></div><div class="meta"><span class="tk">error-100</span><span class="hex">#F8D7DA</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#FFF5F6"></div><div class="meta"><span class="tk">error-50</span><span class="hex">#FFF5F6</span></div></div>
+        </div>
+        <h4 style="color:var(--color-info-600)">Info 資訊 — 處理中用此色族</h4>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#0C63A3"></div><div class="meta"><span class="tk">info-600</span><span class="hex">#0C63A3</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#1184E8"></div><div class="meta"><span class="tk">info-500</span><span class="hex">#1184E8</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#B8DCFB"></div><div class="meta"><span class="tk">info-200</span><span class="hex">#B8DCFB</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#CCE5FF"></div><div class="meta"><span class="tk">info-100</span><span class="hex">#CCE5FF</span></div></div>
+          <div class="swatch"><div class="chip" style="background:#EBF5FF"></div><div class="meta"><span class="tk">info-50</span><span class="hex">#EBF5FF</span></div></div>
+        </div>
+
+        <h3>語意 Token — Semantic Layer (light + dark)</h3>
+        <p class="muted" style="font-size:13px;margin-bottom:12px;">命名循 GitHub Primer：屬性前綴（<span class="mono">fgColor / bgColor / borderColor</span>）+ 角色後綴。產品程式碼只消費這一層；深色模式＝在此邊界做一次值交換，元件規格零分支。</p>
+        <table>
+          <thead><tr><th>Semantic token</th><th>Light → primitive</th><th>Dark → primitive</th><th>用於</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">fgColor.default</td><td><span class="dot" style="background:#1C1F26"></span><span class="mono">neutral.900</span></td><td><span class="dot" style="background:#F7FAFC"></span><span class="mono">neutral.100</span></td><td>主要內文、標題</td></tr>
+            <tr><td class="mono">fgColor.muted</td><td><span class="dot" style="background:#4A5568"></span><span class="mono">neutral.700</span></td><td><span class="dot" style="background:#CBD5E0"></span><span class="mono">neutral.400</span></td><td>次要文字、placeholder</td></tr>
+            <tr><td class="mono">fgColor.subtle</td><td><span class="dot" style="background:#718096"></span><span class="mono">neutral.600</span></td><td><span class="dot" style="background:#A0AEC0"></span><span class="mono">neutral.500</span></td><td>caption、timestamp（AA 邊界）</td></tr>
+            <tr><td class="mono">fgColor.onEmphasis</td><td><span class="dot" style="background:#FFFFFF"></span><span class="mono">neutral.50</span></td><td><span class="dot" style="background:#FFFFFF"></span><span class="mono">neutral.50</span></td><td>填色按鈕／深色 header 上文字</td></tr>
+            <tr><td class="mono">fgColor.accent</td><td><span class="dot" style="background:#1A5094"></span><span class="mono">brand.700</span></td><td><span class="dot" style="background:#6AAAF0"></span><span class="mono">brand.400</span></td><td>連結、互動文字</td></tr>
+            <tr><td class="mono">fgColor.danger</td><td><span class="dot" style="background:#A41C2A"></span><span class="mono">error.600</span></td><td><span class="dot" style="background:#DC3545"></span><span class="mono">error.500</span></td><td>破壞性／逾期文字</td></tr>
+            <tr><td class="mono">bgColor.canvas</td><td><span class="dot" style="background:#F7FAFC"></span><span class="mono">neutral.100</span></td><td><span class="dot" style="background:#0F1117"></span><span class="mono">neutral.950</span></td><td>頁面背景</td></tr>
+            <tr><td class="mono">bgColor.default</td><td><span class="dot" style="background:#FFFFFF"></span><span class="mono">neutral.50</span></td><td><span class="dot" style="background:#1C1F26"></span><span class="mono">neutral.900</span></td><td>card / modal / 主 surface</td></tr>
+            <tr><td class="mono">bgColor.muted</td><td><span class="dot" style="background:#EDF2F7"></span><span class="mono">neutral.200</span></td><td><span class="dot" style="background:#2E3441"></span><span class="mono">neutral.800</span></td><td>交錯列、sidebar</td></tr>
+            <tr><td class="mono">bgColor.accent.emphasis</td><td><span class="dot" style="background:#1D6BC7"></span><span class="mono">brand.600</span></td><td><span class="dot" style="background:#3D87E0"></span><span class="mono">brand.500</span></td><td>primary 按鈕填色、focus ring 來源</td></tr>
+            <tr><td class="mono">bgColor.accent.muted</td><td><span class="dot" style="background:#1A5094"></span><span class="mono">brand.700</span></td><td><span class="dot" style="background:#1D6BC7"></span><span class="mono">brand.600</span></td><td>primary hover、sidebar active</td></tr>
+            <tr><td class="mono">bgColor.accent.subtle</td><td><span class="dot" style="background:#D1E8FD"></span><span class="mono">brand.200</span></td><td><span class="dot" style="background:#14375E"></span><span class="mono">brand.800</span></td><td>選取列 tint、info 底</td></tr>
+            <tr><td class="mono">bgColor.accent.hover</td><td><span class="dot" style="background:#F5F9FF"></span><span class="mono">brand.50</span></td><td><span class="dot" style="background:#2E3441"></span><span class="mono">neutral.800</span></td><td>table row hover、建議項 hover</td></tr>
+            <tr><td class="mono">borderColor.default</td><td><span class="dot" style="background:#E2E8F0"></span><span class="mono">neutral.300</span></td><td><span class="dot" style="background:#4A5568"></span><span class="mono">neutral.700</span></td><td>input／card 邊框、divider</td></tr>
+            <tr><td class="mono">borderColor.muted</td><td><span class="dot" style="background:#EDF2F7"></span><span class="mono">neutral.200</span></td><td><span class="dot" style="background:#2E3441"></span><span class="mono">neutral.800</span></td><td>table row 細邊框</td></tr>
+            <tr><td class="mono">borderColor.accent</td><td><span class="dot" style="background:#1D6BC7"></span><span class="mono">brand.600</span></td><td><span class="dot" style="background:#3D87E0"></span><span class="mono">brand.500</span></td><td>focus 邊框、unread 左緣</td></tr>
+            <tr><td class="mono">focus.ring</td><td><span class="dot" style="background:#A3CCFA"></span><span class="mono">brand.300</span></td><td><span class="dot" style="background:#A3CCFA"></span><span class="mono">brand.300</span></td><td>3px outline（全域 :focus-visible）</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin-top:32px">狀態語意映射 — Status semantic mapping</h3>
+        <table>
+          <thead><tr><th>Status intent</th><th>fg</th><th>bg</th><th>border</th><th>Badge (ZH)</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">status.pending</td><td class="mono">fgColor.warning</td><td class="mono">warning.subtle</td><td class="mono">borderColor.warning</td><td>待處理</td></tr>
+            <tr><td class="mono">status.inProgress</td><td class="mono">fgColor.info</td><td class="mono">info.subtle</td><td class="mono">borderColor.info</td><td>處理中</td></tr>
+            <tr><td class="mono">status.done</td><td class="mono">fgColor.success</td><td class="mono">success.subtle</td><td class="mono">borderColor.success</td><td>已完成</td></tr>
+            <tr><td class="mono">status.overdue</td><td class="mono">fgColor.danger</td><td class="mono">error.50 / error.700</td><td class="mono">borderColor.danger</td><td>逾期 (overlay)</td></tr>
+            <tr><td class="mono">status.scheduled</td><td class="mono">brand.800 / brand.300</td><td class="mono">accent.subtle</td><td class="mono">borderColor.accent</td><td>已排程</td></tr>
+            <tr><td class="mono">status.draft</td><td class="mono">fgColor.muted</td><td class="mono">bgColor.muted</td><td class="mono">borderColor.default</td><td>草稿</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info" style="margin-top:16px">
+          <b>色彩限制（§2.6）：</b> 紅色僅限錯誤／破壞性／逾期，不作品牌或「注意」色 · 綠色不表示「啟用」（台灣文化「戴綠帽」聯想，啟用用 brand-600 藍）· 不用純黑 #000 內文（用 neutral-900）· neutral-500 以下不承載文字（對比不足）· 黃色不作主要動作色 · MVP 全面避免漸層，純平塗。
+        </div>
+      </section>
+
+      <!-- ================= 4. TYPOGRAPHY ================= -->
+      <section id="type">
+        <div class="sec-head">
+          <div class="sec-num">04 — 字體</div>
+          <h2>字體 Typography</h2>
+          <p>Inter（拉丁/數字）+ Noto Sans TC（繁體中文，非簡體）配對。兩者在相近 x-height 共存，混排無需字級補償。不用襯線、不用裝飾字體。對外溝通與產品介面同一套字——這份一致性本身就是「平靜、可信賴」的體現。</p>
+        </div>
+        <div class="font-pair">
+          <div class="font-card">
+            <div class="label">Latin / Numeric — Inter</div>
+            <div class="big" style="font-family:var(--font-latin)">Aa Bb 0123</div>
+            <div class="specimen" style="font-family:var(--font-latin)">The quick brown fox · 1,234 戶 · 06/14 09:00<br>表格數字用 <span class="tnum" style="font-weight:600">tabular-nums</span> 對齊：<span class="tnum">12,408</span> / <span class="tnum">00,917</span></div>
+          </div>
+          <div class="font-card">
+            <div class="label">繁體中文 — Noto Sans TC</div>
+            <div class="big" style="font-family:var(--font-cjk)">連居 鄰里</div>
+            <div class="specimen" style="font-family:var(--font-cjk)">您有 3 件待處理工單。連結社區，安居有序。<br>絕不使用 Noto Sans SC / Microsoft JhengHei UI（字形錯誤、喪失可信度）。</div>
+          </div>
+        </div>
+
+        <h3>類型尺度 Type Scale</h3>
+        <div class="card" style="padding:var(--space-2) var(--space-6)">
+          <div class="type-row"><div class="spec"><b>display / h1</b>28px · 700 · LH 1.3 · −0.02em</div><div class="sample"><span class="ts-display">連居 Linkju 後台</span></div></div>
+          <div class="type-row"><div class="spec"><b>h2</b>22px · 600 · LH 1.35 · −0.01em</div><div class="sample"><span class="ts-h2">區段標題 Section heading</span></div></div>
+          <div class="type-row"><div class="spec"><b>h3</b>18px · 600 · LH 1.4</div><div class="sample"><span class="ts-h3">卡片標題 Card heading</span></div></div>
+          <div class="type-row"><div class="spec"><b>body</b>14px · 400 · LH 1.57</div><div class="sample"><span class="ts-body">預設內文、表格儲存格、表單輸入。您有一件包裹已送達，請至管理室領取。</span></div></div>
+          <div class="type-row" style="border-bottom:none"><div class="spec"><b>caption</b>12px · 400 · LH 1.5 · 0.01em</div><div class="sample"><span class="ts-caption">時間戳、metadata、helper text · 2026年6月14日 09:00</span></div></div>
+        </div>
+
+        <h3>繁體中文渲染規則 — CJK Rules</h3>
+        <div class="grid g3">
+          <div class="card">
+            <h4 style="margin-top:0">14px 下限</h4>
+            <p class="muted" style="font-size:13px;line-height:1.6">中文字最小 <b>14px</b>（logical px）。表格儲存格 14px 起，絕不為密度壓到 12px。12px 僅次要資訊（時間戳）可用。行高不低於 1.4。</p>
+          </div>
+          <div class="card">
+            <h4 style="margin-top:0">敬語「您」</h4>
+            <p class="muted" style="font-size:13px;line-height:1.6">系統訊息、公告、報表對管委會/主委一律用敬語「<b>您</b>」，絕不用「你」。正式而不冷漠，呼應「鄰居」溫度。</p>
+          </div>
+          <div class="card">
+            <h4 style="margin-top:0">tabular-nums 對齊計數</h4>
+            <p class="muted" style="font-size:13px;line-height:1.6">計數、金額、戶號用等寬數字對齊：<br><span class="tnum" style="font-size:16px">已讀 128 / 240</span><br><span class="tnum" style="font-size:16px">已讀 &nbsp;7 / 240</span><br>字重：內文 400、強調 500、僅 H1/H2 用 700。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. TOKENS ================= -->
+      <section id="tokens">
+        <div class="sec-head">
+          <div class="sec-num">05 — Tokens</div>
+          <h2>非顏色 Token 家族 Tokens</h2>
+          <p>圓角、陰影/層級、間距（4px grid）、動效時長/緩動、z-index 階梯。數值從元件規格抽取並正式化，使其無法漂移。陰影一律 navy-tinted 中性黑，克制（Calm Infrastructure）。</p>
+        </div>
+
+        <h3>圓角 Radius</h3>
+        <div class="tok-grid">
+          <div class="tok"><div class="demo"><div class="rbox" style="border-radius:0"></div></div><div class="tk">radius.none</div><div class="v">0</div></div>
+          <div class="tok"><div class="demo"><div class="rbox" style="border-radius:6px"></div></div><div class="tk">radius.sm</div><div class="v">6px · Button sm, Badge</div></div>
+          <div class="tok"><div class="demo"><div class="rbox" style="border-radius:8px"></div></div><div class="tk">radius.md</div><div class="v">8px · Input, Card web</div></div>
+          <div class="tok"><div class="demo"><div class="rbox" style="border-radius:10px"></div></div><div class="tk">radius.lg</div><div class="v">10px · Button lg, Toast</div></div>
+          <div class="tok"><div class="demo"><div class="rbox" style="border-radius:12px"></div></div><div class="tk">radius.xl</div><div class="v">12px · Card mobile</div></div>
+          <div class="tok"><div class="demo"><div class="rbox" style="border-radius:9999px"></div></div><div class="tk">radius.pill</div><div class="v">9999 · 僅搜尋框例外</div></div>
+        </div>
+
+        <h3>陰影 / 層級 Elevation</h3>
+        <div class="tok-grid">
+          <div class="tok"><div class="demo"><div class="sbox" style="box-shadow:none"></div></div><div class="tk">shadow.none</div><div class="v">none · 表格儲存格</div></div>
+          <div class="tok"><div class="demo"><div class="sbox" style="box-shadow:0 1px 3px rgba(15,17,23,.08)"></div></div><div class="tk">shadow.sm</div><div class="v">card resting</div></div>
+          <div class="tok"><div class="demo"><div class="sbox" style="box-shadow:0 4px 12px rgba(15,17,23,.10)"></div></div><div class="tk">shadow.md</div><div class="v">dropdown popover</div></div>
+          <div class="tok"><div class="demo"><div class="sbox" style="box-shadow:0 4px 16px rgba(15,17,23,.12)"></div></div><div class="tk">shadow.overlay</div><div class="v">toast / modal</div></div>
+        </div>
+        <p class="subtle" style="margin-top:8px">深色模式：陰影幾乎不可見，降級為 <span class="mono">shadow.none</span>，層級改用 <span class="mono">borderColor.muted</span> 1px 邊框（lightness-based elevation）。</p>
+
+        <h3>間距 Spacing — 4px grid</h3>
+        <div class="card">
+          <div class="space-row"><span class="lab">space.1 · 4px · xs</span><div class="bar" style="width:4px"></div></div>
+          <div class="space-row"><span class="lab">space.2 · 8px · sm</span><div class="bar" style="width:8px"></div></div>
+          <div class="space-row"><span class="lab">space.3 · 12px</span><div class="bar" style="width:12px"></div></div>
+          <div class="space-row"><span class="lab">space.4 · 16px · md</span><div class="bar" style="width:16px"></div></div>
+          <div class="space-row"><span class="lab">space.5 · 20px</span><div class="bar" style="width:20px"></div></div>
+          <div class="space-row"><span class="lab">space.6 · 24px · lg</span><div class="bar" style="width:24px"></div></div>
+          <div class="space-row"><span class="lab">space.8 · 32px · xl</span><div class="bar" style="width:32px"></div></div>
+          <div class="space-row"><span class="lab">space.10 · 40px</span><div class="bar" style="width:40px"></div></div>
+          <div class="space-row"><span class="lab">space.12 · 48px · 2xl</span><div class="bar" style="width:48px"></div></div>
+          <div class="space-row"><span class="lab">space.16 · 64px · 3xl</span><div class="bar" style="width:64px"></div></div>
+          <div class="space-row"><span class="lab">space.20 · 80px</span><div class="bar" style="width:80px"></div></div>
+        </div>
+
+        <h3>動效 Motion — 時長與緩動</h3>
+        <div class="card">
+          <div class="motion-row f"><span class="lab">duration.fast · 150ms</span><div class="track"><i></i></div></div>
+          <div class="motion-row"><span class="lab">duration.normal · 250ms</span><div class="track"><i></i></div></div>
+          <div class="motion-row"><span class="lab">duration.slow · 400ms（硬上限）</span><div class="track"><i></i></div></div>
+          <div class="motion-row" style="border-bottom:none"><span class="lab">duration.page · 300ms</span><div class="track"><i></i></div></div>
+          <p class="subtle" style="margin-top:12px">
+            <span class="mono">easing.out</span> cubic-bezier(0,0,0.2,1) 進場 ·
+            <span class="mono">easing.in</span> cubic-bezier(0.4,0,1,1) 退場 ·
+            <span class="mono">easing.inOut</span> cubic-bezier(0.4,0,0.2,1) 位移 ·
+            <span class="mono">easing.linear</span> spinner only。
+            絕不超過 400ms；無彈跳/spring（管理端）；尊重 <span class="mono">prefers-reduced-motion</span>。
+          </p>
+        </div>
+
+        <h3>Z-index 階梯</h3>
+        <div class="card z-ladder">
+          <div class="lvl"><span class="lab">z.toast · 1300</span><div class="swatch-z" style="flex-basis:300px"></div></div>
+          <div class="lvl"><span class="lab">z.modal · 1200</span><div class="swatch-z" style="flex-basis:250px;background:var(--color-brand-500)"></div></div>
+          <div class="lvl"><span class="lab">z.overlay · 1100</span><div class="swatch-z" style="flex-basis:200px;background:var(--color-brand-400)"></div></div>
+          <div class="lvl"><span class="lab">z.dropdown · 1000</span><div class="swatch-z" style="flex-basis:150px;background:var(--color-brand-300)"></div></div>
+          <div class="lvl"><span class="lab">z.sticky · 100</span><div class="swatch-z" style="flex-basis:100px;background:var(--color-brand-200)"></div></div>
+          <div class="lvl"><span class="lab">z.base · 0</span><div class="swatch-z" style="flex-basis:50px;background:var(--color-neutral-300);box-shadow:none"></div></div>
+        </div>
+      </section>
+
+      <!-- ================= 6. COMPONENTS ================= -->
+      <section id="components">
+        <div class="sec-head">
+          <div class="sec-num">06 — 元件</div>
+          <h2>元件庫 Components</h2>
+          <p>以真實 HTML/CSS 渲染的元件範例，全部消費 semantic token。一個畫面一個 primary 按鈕；danger 須伴隨確認對話框；一列一個 badge（urgent/逾期為正交維度可疊加）。</p>
+        </div>
+
+        <h3>按鈕 Buttons</h3>
+        <div class="demo-block">
+          <div class="demo-row">
+            <button class="btn btn-primary">登記包裹</button>
+            <button class="btn btn-secondary">取消</button>
+            <button class="btn btn-ghost">再次通知</button>
+            <button class="btn btn-danger">刪除工單</button>
+          </div>
+          <div class="demo-row" style="margin-top:16px">
+            <button class="btn btn-primary" disabled>Primary 停用</button>
+            <button class="btn btn-secondary" disabled>Secondary 停用</button>
+            <button class="btn btn-ghost" disabled>Ghost 停用</button>
+            <button class="btn btn-danger" disabled>Danger 停用</button>
+          </div>
+          <p class="subtle" style="margin-top:14px">primary <span class="mono">brand-600</span>→hover <span class="mono">brand-700</span> · 停用用「色」不用 opacity（disabled = <span class="mono">brand-300</span>）· danger 僅限不可逆破壞性動作，需確認對話框。</p>
+        </div>
+
+        <h3>狀態徽章 Status Badges</h3>
+        <div class="demo-block">
+          <div class="demo-row">
+            <span class="badge badge-pending"><span class="d"></span>待處理</span>
+            <span class="badge badge-inprogress"><span class="d"></span>處理中</span>
+            <span class="badge badge-done"><span class="d"></span>已完成</span>
+            <span class="badge badge-draft"><span class="d"></span>草稿</span>
+            <span class="badge badge-scheduled"><span class="d"></span>已排程</span>
+            <span class="badge badge-urgent"><span class="d"></span>緊急</span>
+          </div>
+          <div class="callout" style="margin-top:18px">
+            <b>「OPEN = amber 不是 grey」決議：</b> 工單剛建立、尚未指派 (OPEN) 一律對映 <span class="mono">status.pending</span>＝<b>琥珀 amber</b>，廢除 grey-OPEN 對應。「未指派」是需要管理員行動的狀態，灰色會讓它在列表中視覺消失，違反 Manager-First Density。灰色只保留給真正非活躍、不需行動的狀態——公告草稿。工單沒有任何狀態用灰色。
+          </div>
+
+          <h4>逾期 danger overlay — 疊加，不取代狀態色</h4>
+          <p class="subtle" style="margin-bottom:12px">逾期是與工單狀態<b>正交</b>的維度。逾期時，狀態 badge <b>維持不變</b>，紅色「逾期」chip <b>另外疊加在旁邊</b>（Team B 決議：overlay，不是把狀態色換成紅色）。</p>
+          <div class="demo-row">
+            <div class="overlay-demo">
+              <span class="badge badge-pending"><span class="d"></span>待處理</span>
+              <span class="badge badge-overdue"><span class="d"></span>逾期</span>
+            </div>
+            <span style="color:var(--fg-subtle)">←→</span>
+            <div class="overlay-demo">
+              <span class="badge badge-inprogress"><span class="d"></span>處理中</span>
+              <span class="badge badge-overdue"><span class="d"></span>逾期</span>
+            </div>
+          </div>
+        </div>
+
+        <h3>輸入 / Combobox Inputs</h3>
+        <div class="demo-block">
+          <div class="grid g3" style="align-items:start">
+            <div>
+              <div class="field">
+                <label for="d1">戶號</label>
+                <input class="input" id="d1" type="text" placeholder="例：12F-3" value="12F-3">
+                <div class="help">表單一律有可見 label，不以 placeholder 取代。</div>
+              </div>
+            </div>
+            <div>
+              <div class="field">
+                <label for="d2">電話（錯誤態）</label>
+                <input class="input err" id="d2" type="text" value="09xx">
+                <div class="errmsg">請輸入 10 碼手機號碼。</div>
+              </div>
+            </div>
+            <div>
+              <label class="field" style="display:block"><span style="font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--color-neutral-700)">搜尋住戶（pill 例外）</span></label>
+              <div class="search-input" style="margin-top:4px"><span class="mg">⌕</span><input type="text" placeholder="輸入戶號搜尋…"></div>
+            </div>
+          </div>
+
+          <h4>Combobox — 工單類別（可選可自填）</h4>
+          <div class="combo">
+            <div class="field" style="max-width:360px">
+              <label for="cb">工單類別</label>
+              <input class="input" id="cb" type="text" value="水電維修" readonly>
+            </div>
+            <div class="combo-pop">
+              <div class="opt sel">水電維修</div>
+              <div class="opt">清潔</div>
+              <div class="opt">公設設施</div>
+              <div class="opt">電梯</div>
+              <div class="opt">停車場</div>
+              <div class="opt">門禁</div>
+              <div class="opt">其他</div>
+            </div>
+          </div>
+          <div class="callout info" style="margin-top:14px">
+            <b>IME 防呆 + 非同步住戶搜尋：</b> 中文注音/倉頡組字期間 <b>不</b>監聽 onChange 觸發即時搜尋/驗證；使用 <span class="mono">onSubmitEditing</span> 或 debounced（≥300ms）<span class="mono">onChangeText</span>，避免在組字中觸發邏輯。住戶搜尋（&gt;20 筆建議）改用 Search 輸入 + 非同步結果，而非 Combobox。
+          </div>
+        </div>
+
+        <h3>卡片 Cards</h3>
+        <div class="sample-cards">
+          <div class="scard unread">
+            <div class="top"><span class="badge badge-scheduled"><span class="d"></span>已排程</span><time>06/15 09:00</time></div>
+            <h4>社區 6 月份消防安檢通知</h4>
+            <p>本週六上午將進行年度消防安全檢查，屆時各樓層走道請勿堆放雜物…</p>
+            <div class="foot">未讀（左緣 4px brand-600 accent）· 已讀 <span class="tnum">0</span> / <span class="tnum">240</span></div>
+          </div>
+          <div class="scard">
+            <div class="top"><span class="badge badge-done"><span class="d"></span>已完成</span><time>06/13 14:22</time></div>
+            <h4>停車場照明維修完成通知</h4>
+            <p>地下二樓 B2 車道照明已修復完畢，感謝住戶耐心等候。</p>
+            <div class="foot">已讀 <span class="tnum">128</span> / <span class="tnum">240</span>（已讀回執以戶號呈現，不顯示姓名）</div>
+          </div>
+          <div class="scard">
+            <div class="top"><span class="badge badge-pending"><span class="d"></span>待領取</span><time>06/14 11:05</time></div>
+            <h4><span class="unit">8F-2</span> · 包裹已送達</h4>
+            <p>黑貓宅急便 · 1 件 · 置於管理室 A 櫃。</p>
+            <div style="margin-top:12px"><button class="btn btn-ghost btn-xs">再次通知</button></div>
+          </div>
+          <div class="scard">
+            <div class="top">
+              <span style="display:flex;gap:6px"><span class="badge badge-pending"><span class="d"></span>待處理</span><span class="badge badge-urgent"><span class="d"></span>緊急</span></span>
+              <time class="mono" style="color:var(--fg-subtle)">#WO-20418</time>
+            </div>
+            <h4>3 樓電梯異音</h4>
+            <p class="muted" style="font-size:13px;margin-top:6px"><span class="unit">3F-1</span> 報修 · 指派 林師傅 · 06/14 提交 · 📎 2 張</p>
+          </div>
+        </div>
+
+        <h3>管理端資料表 Data Table — 密集、戶號 only、無住戶姓名 (PII)</h3>
+        <div class="dt-wrap">
+          <div class="dt-toolbar">
+            <div class="search-input" style="max-width:260px"><span class="mg">⌕</span><input type="text" placeholder="搜尋戶號或類別…"></div>
+            <span class="count">共 <span class="tnum">6</span> 筆 · 每頁 25 · 戶號顯示，不顯示住戶姓名（個資法）</span>
+          </div>
+          <table class="dt">
+            <thead>
+              <tr>
+                <th style="width:120px">戶號</th>
+                <th>類別 / 摘要</th>
+                <th class="center" style="width:160px">狀態</th>
+                <th class="num" style="width:120px">提交時間</th>
+                <th style="width:90px">指派</th>
+                <th style="width:170px;text-align:right">動作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="unit">12F-3</td>
+                <td>水電維修 · 廚房水管漏水</td>
+                <td class="center"><span class="badge badge-pending"><span class="d"></span>待處理</span></td>
+                <td class="num">06/14 09:12</td>
+                <td>—</td>
+                <td><div class="row-actions"><button class="btn btn-ghost btn-xs">指派</button><button class="btn btn-ghost btn-xs">詳情</button></div></td>
+              </tr>
+              <tr>
+                <td class="unit">8F-2</td>
+                <td>電梯 · A 棟電梯按鈕失靈</td>
+                <td class="center"><span class="badge badge-inprogress"><span class="d"></span>處理中</span></td>
+                <td class="num">06/13 16:40</td>
+                <td>林師傅</td>
+                <td><div class="row-actions"><button class="btn btn-ghost btn-xs">更新</button><button class="btn btn-ghost btn-xs">詳情</button></div></td>
+              </tr>
+              <tr class="overdue-row">
+                <td class="unit">5F-1</td>
+                <td>公設設施 · 健身房跑步機故障</td>
+                <td class="center"><span style="display:inline-flex;gap:6px"><span class="badge badge-pending"><span class="d"></span>待處理</span><span class="badge badge-overdue"><span class="d"></span>逾期</span></span></td>
+                <td class="num">06/09 10:05</td>
+                <td>—</td>
+                <td><div class="row-actions"><button class="btn btn-ghost btn-xs">指派</button><button class="btn btn-ghost btn-xs">詳情</button></div></td>
+              </tr>
+              <tr>
+                <td class="unit">3F-1</td>
+                <td>門禁 · 大門感應卡無法刷入</td>
+                <td class="center"><span class="badge badge-done"><span class="d"></span>已完成</span></td>
+                <td class="num">06/12 08:30</td>
+                <td>陳工</td>
+                <td><div class="row-actions"><button class="btn btn-ghost btn-xs">詳情</button></div></td>
+              </tr>
+              <tr>
+                <td class="unit">15F-4</td>
+                <td>清潔 · 公共走道清潔加強</td>
+                <td class="center"><span class="badge badge-done"><span class="d"></span>已完成</span></td>
+                <td class="num">06/11 13:18</td>
+                <td>清潔組</td>
+                <td><div class="row-actions"><button class="btn btn-ghost btn-xs">詳情</button></div></td>
+              </tr>
+              <tr>
+                <td class="unit">2F-2</td>
+                <td>停車場 · B2 車道地面油漬</td>
+                <td class="center"><span class="badge badge-inprogress"><span class="d"></span>處理中</span></td>
+                <td class="num">06/14 07:55</td>
+                <td>清潔組</td>
+                <td><div class="row-actions"><button class="btn btn-ghost btn-xs">更新</button><button class="btn btn-ghost btn-xs">詳情</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="subtle" style="margin-top:10px">列高 48px（compact 40px）· 交錯列 + 逾期列 <span class="mono">error-50</span> 底 · hover <span class="mono">brand-50</span> · 戶號與時間用等寬 tabular-nums · 狀態誠實顯示精確時間戳，不用模糊「處理中」。</p>
+
+        <h3>Toast 通知</h3>
+        <div class="toasts">
+          <div class="toast success"><span class="ic">✓</span><div><div class="tt">公告已排程</div><div class="ds">將於 2026/06/15 09:00 發送。</div></div><span class="x">✕</span></div>
+          <div class="toast warning"><span class="ic">⚠</span><div><div class="tt">此住戶尚未安裝 App</div><div class="ds">推播未送出。可改以簡訊通知。</div></div><span class="x">✕</span></div>
+          <div class="toast error"><span class="ic">✕</span><div><div class="tt">照片上傳失敗</div><div class="ds">請重試或略過照片。</div><div class="persist">error 持久不自動消失，須手動關閉——錯誤要求行動，不可自動藏起。</div></div><span class="x">✕</span></div>
+        </div>
+        <p class="subtle" style="margin-top:10px">success/info 4000ms 自動消失 · warning 6000ms · error duration=0 持久 · 左 4px accent 為變體語意色，底為變體 50 色 · web 右下堆疊。</p>
+      </section>
+
+      <!-- ================= 7. TRUST / ANTI-PATTERNS ================= -->
+      <section id="trust">
+        <div class="sec-head">
+          <div class="sec-num">07 — Trust &amp; Anti-patterns</div>
+          <h2>我們刻意避免什麼</h2>
+          <p>以「透明賺取信任 (Earned Trust Through Transparency)」為核心，把兩大競品（智生活 / 中保好生活）的具體 UX 反模式，逐條對映到 Linkju 可被機械化檢查的設計守則。信任要靠透明賺取，不靠徽章宣稱。</p>
+        </div>
+        <table class="pit">
+          <thead><tr><th style="width:170px">競品陷阱</th><th style="width:130px">來源 / 證據</th><th style="width:90px">對映原則</th><th>Linkju 守則 (guardrail)</th></tr></thead>
+          <tbody>
+            <tr><td>廣告注入 + 付費才去廣告</td><td class="src">智生活 <b>[已查證]</b></td><td>§1.1 / §1.4</td><td class="guard">任何畫面禁 banner／推廣卡／贊助內容／第三方廣告位（出現即退件）；禁「付費解鎖乾淨體驗」；通知分級不綁付費。</td></tr>
+            <tr><td>資安徽章宣稱 vs 實測落差（消基會 16 項未過）</td><td class="src">智生活 <b>[已查證]</b></td><td>§1.4</td><td class="guard">不放無法驗證的「資安認證徽章」做信任裝飾；徽章須可點擊連到第三方報告才可放；隱私宣告完整、一鍵可達；敏感操作須二次確認。</td></tr>
+            <tr><td>通知濫發 + 一刀切設定</td><td class="src">智生活 <b>[已查證]</b></td><td>§1.3 / §1.4</td><td class="guard">通知分級可訂閱（緊急公告不可關／一般公告／包裹／工單）；無「行銷推播」類別（無廣告）；推播文案前置「要做什麼」。</td></tr>
+            <tr><td>功能埋藏 / 退步式改版</td><td class="src">智生活 <b>[已查證]</b></td><td>§1.3 / §1.2</td><td class="guard">住戶端固定 4 tab，核心動作距首頁最多 1 跳；把既有高頻功能往下埋＝UX 退步，需記錄取捨；首頁不放服務市集/加值入口。</td></tr>
+            <tr><td>客服黑洞 / 壞消息沉默</td><td class="src">智生活 <b>[已查證]</b></td><td>§1.4</td><td class="guard">所有失敗都要具體可行動的錯誤態，不得靜默；error Toast 持久（duration=0）須手動關閉；關鍵流程每分支明示下一步。</td></tr>
+            <tr><td>宣稱無廣告但仍有廣告（含音效式吸睛）</td><td class="src">中保好生活 <b>[已查證]</b></td><td>§1.1 / §1.4</td><td class="guard">「廣告」定義從寬：任何引導使用者去做與當前任務無關之事的視覺元素皆算（含自家功能促銷、跨賣卡、節慶橫幅、音效動畫）一律禁；只承諾每個畫面可驗證的事。</td></tr>
+            <tr><td>集點博弈 / 遊戲化參與壓力</td><td class="src">中保好生活 <b>[已查證+推論]</b></td><td>§1.1</td><td class="guard">住戶端不做簽到、連續登入獎勵、點數、徽章、排行榜；禁「看廣告換獎勵」任何變體；紅點/badge 只代表真實待辦數，不製造虛假緊迫感。</td></tr>
+            <tr><td>過度權限索取且無理由說明</td><td class="src">中保好生活 <b>[已查證]</b></td><td>§1.4</td><td class="guard">權限即時索取 (just-in-time) + 即時說明；支援單張相片選取（不要求完整相簿）；不索取無關權限（MVP 無藍牙需求即不請求）；「已收到回饋」不算修正。</td></tr>
+            <tr><td>母集團服務當預設入口的跨賣傾向</td><td class="src">中保好生活 <b>[推論]</b></td><td>§1.3 / §1.1</td><td class="guard">MVP 不放任何第三方/集團服務入口；住戶首頁只承載公告/包裹/報修/我的；未來加值須管委會主動開啟、不得擠佔核心動線。</td></tr>
+            <tr><td>管理端是事後補丁、作業效率差</td><td class="src">兩家 <b>[推論]</b></td><td>§1.2</td><td class="guard">管理端 Web 是專業作業工具，非放大版住戶 App；fold 以上 15–20 列、篩選即時、動作一鍵；管理端零廣告/零加值促銷；狀態顯示精確時間戳。</td></tr>
+            <tr><td>缺合規稽核 / 「誰看了」可信記錄</td><td class="src">兩家 <b>[推論]</b></td><td>§1.4</td><td class="guard">公告已讀回執以<b>戶號</b>呈現，不顯示住戶姓名；費用催繳一律私訊，禁止公開公告列出欠費戶（個資法 + 信任）。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </div><!-- /content -->
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-foot">
+      <div class="inner">
+        <svg xmlns="http://www.w3.org/2000/svg" width="150" viewBox="0 0 460 160" role="img" aria-label="Linkju 連居">
+          <g transform="translate(8 24) scale(0.92)">
+            <path d="M22 64 L40 46 L58 64 L58 90 L22 90 Z" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M70 64 L88 46 L106 64 L106 90 L70 90 Z" fill="none" stroke="#6AAAF0" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+            <line x1="40" y1="46" x2="88" y2="46" stroke="#6AAAF0" stroke-width="9" stroke-linecap="round"/>
+            <circle cx="40" cy="46" r="7.5" fill="#FFFFFF"/><circle cx="88" cy="46" r="7.5" fill="#6AAAF0"/>
+          </g>
+          <line x1="146" y1="40" x2="146" y2="120" stroke="#4A5568" stroke-width="2"/>
+          <text x="170" y="78" font-family="'Noto Sans TC','PingFang TC',sans-serif" font-size="52" font-weight="600" letter-spacing="4" fill="#FFFFFF">連居</text>
+          <g transform="translate(168 86) scale(0.46)"><g fill="none" stroke="#6AAAF0" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><path d="M30 44 L30 116 L68 116"/><path d="M92 72 L92 116"/><path d="M120 116 L120 72 M120 84 Q120 72 138 72 Q156 72 156 90 L156 116"/><path d="M182 44 L182 116 M182 95 L208 72 M190 89 L214 116"/><path d="M246 72 L246 124 Q246 140 230 140"/><path d="M276 72 L276 100 Q276 116 294 116 Q312 116 312 100 L312 72 M312 72 L312 116"/></g></g>
+        </svg>
+        <h4>Linkju 連居 — 設計系統與企業識別系統</h4>
+        <div class="meta">
+          Design System v1.0（2026-06-04，Approved）· Design Tokens v1.0（2026-06-13，Approved）· CIS v0.1（首版草稿）<br>
+          產出日期 2026年6月14日 · 住宅社區的平靜基礎設施 · 不另創品牌色，強化既有 navy/calm 方向。
+        </div>
+        <div class="links">
+          <a href="../Linkju/docs/design/design-system.md">design-system.md</a>
+          <a href="../Linkju/docs/design/design-tokens.md">design-tokens.md</a>
+          <a href="../Linkju/docs/brand/cis.md">cis.md</a>
+          <a href="../Linkju/docs/design/research-competitor-pitfalls.md">research-competitor-pitfalls.md</a>
+        </div>
+        <span class="vbadge">v0 draft for founder review</span>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script>
+// Tiny scroll-spy for the section nav (no framework).
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var map = {};
+  links.forEach(function(a){ var id=a.getAttribute('href').slice(1); var s=document.getElementById(id); if(s){map[id]=a;} });
+  var sections = Object.keys(map).map(function(id){return document.getElementById(id);});
+  if(!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){a.classList.remove('active');});
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
+  sections.forEach(function(s){io.observe(s);});
+})();
+</script>
+</body>
+</html>
