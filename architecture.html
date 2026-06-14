@@ -5,15 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Linkju 系統架構設計 (SASD) — Backend + Frontend MVP Phase 技術設計文件" />
   <title>Linkju — 系統架構設計 (SASD)</title>
+  <link rel="stylesheet" href="assets/site.css">
   <style>
     :root {
-      --accent: #2563eb;
-      --accent-light: #eff6ff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --bg: #ffffff;
-      --section-bg: #f9fafb;
       --green: #16a34a;
       --green-bg: #f0fdf4;
       --green-border: #bbf7d0;
@@ -21,11 +15,7 @@
       --purple-bg: #f5f3ff;
       --purple-border: #ddd6fe;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); font-size: 15px; line-height: 1.65; }
 
-    header { background: var(--accent); color: white; padding: 40px 48px 32px; }
-    header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
     header .sub { opacity: 0.8; margin-top: 6px; font-size: 14px; }
     header .meta { margin-top: 16px; font-size: 12px; opacity: 0.65; }
 
@@ -169,71 +159,16 @@
     .highlight { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
     .highlight strong { color: var(--accent); }
 
-    footer { border-top: 1px solid var(--border); padding: 24px 48px; font-size: 12px; color: var(--muted); background: var(--section-bg); }
-
     @media (max-width: 650px) {
       header, footer { padding-left: 20px; padding-right: 20px; }
       .container { padding: 32px 20px; }
       .tech-grid, .decision-grid { grid-template-columns: 1fr; }
     }
-
-    /* ── Top Navigation ── */
-    .topnav {
-      background: #1e3a8a;
-      border: none;
-      padding: 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 50px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .nav-logo {
-      color: rgba(255,255,255,0.75);
-      font-weight: 700;
-      font-size: 13px;
-      text-decoration: none;
-      letter-spacing: 0.2px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .nav-logo:hover { color: white; }
-    .nav-logo .logo-mark { font-size: 15px; }
-    .nav-links { display: flex; align-items: center; gap: 2px; }
-    .nav-link {
-      color: rgba(255,255,255,0.55);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-    }
-    .nav-link:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
-    .nav-link.active { background: rgba(255,255,255,0.15); color: white; font-weight: 600; }
-    @media (max-width: 650px) {
-      .topnav { padding: 10px 20px; height: auto; flex-wrap: wrap; gap: 8px; }
-      .nav-links { gap: 0; flex-wrap: wrap; }
-      .nav-link { padding: 4px 8px; font-size: 12px; }
-    }
   </style>
 </head>
 <body>
 
-<nav class="topnav">
-  <a href="index.html" class="nav-logo"><span class="logo-mark">◆</span> Linkju Docs</a>
-  <div class="nav-links">
-    <a href="mvp-research.html" class="nav-link">MVP 調研</a>
-    <a href="pm-bd-playbook.html" class="nav-link">PM/BD 框架</a>
-    <a href="gtm-strategy.html" class="nav-link">GTM 策略</a>
-    <a href="team.html" class="nav-link">團隊</a>
-    <a href="architecture.html" class="nav-link active">架構設計</a>
-  </div>
-</nav>
+<div id="site-nav"></div>
 
 <header>
   <h1>系統架構設計 (SASD)</h1>
@@ -932,5 +867,7 @@ src/app/
   Linkju &nbsp;｜&nbsp; <a href="https://github.com/PigeonPacket" style="color: inherit;">PigeonPacket</a> &nbsp;｜&nbsp; 文件更新頻率：每次重大調研或里程碑後
 </footer>
 
+  <script src="assets/site.js" defer></script>
+  <script src="tts.js" defer></script>
 </body>
 </html>

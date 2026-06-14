@@ -1,0 +1,94 @@
+/* ============================================================================
+   Linkju Docs — shared site stylesheet (鄰聚 / Linkju 鄰光 design tokens)
+   Single source of truth for the docs site chrome. Edit HERE, every page updates.
+   Direction D 鄰光: Prussian blue base · blue-600 actions · single amber accent ·
+   cream + light-grey surfaces.
+   ============================================================================ */
+
+:root {
+  /* Prussian blue ramp */
+  --blue-900:#0E2438; --blue-800:#14304A; --blue-700:#1C405E;
+  --blue-600:#25557D; --blue-500:#356C97;
+  /* single amber accent (lamplight) */
+  --amber-500:#E0922A; --amber-700:#B3741A; --amber-100:#F7E6C8;
+  /* cream + light-grey neutrals */
+  --cream:#FAF7F0; --card:#FFFFFF;
+  --grey-50:#F2F3F5; --grey-100:#E8EAED; --grey-200:#D7DBE0;
+  --grey-400:#A7AEB7; --grey-600:#636A74; --ink:#1A2430;
+
+  /* semantic */
+  --bg:var(--cream); --text:var(--ink); --muted:var(--grey-600);
+  --border:var(--grey-100); --section-bg:var(--grey-50);
+  --accent:var(--blue-600);            /* interactive / links / CTAs */
+  --accent-light:#E7EDF3;              /* pale blue tint */
+  --chrome:var(--blue-800);            /* nav + header band */
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:"Inter","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text); background:var(--bg);
+  min-height:100vh; display:flex; flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+a { color:var(--accent); }
+
+/* ── Shared top navigation (injected by site.js into #site-nav) ── */
+.topnav {
+  background:var(--chrome); padding:0 48px;
+  display:flex; align-items:center; justify-content:space-between;
+  height:50px; position:sticky; top:0; z-index:100;
+}
+.nav-logo {
+  color:rgba(255,255,255,.78); font-weight:700; font-size:13px;
+  text-decoration:none; letter-spacing:.2px; display:flex; align-items:center; gap:7px;
+}
+.nav-logo:hover, .nav-logo.active { color:#fff; }
+.nav-logo .logo-mark { font-size:14px; color:var(--amber-500); }
+.nav-links { display:flex; align-items:center; gap:2px; }
+.nav-link {
+  color:rgba(255,255,255,.6); text-decoration:none; font-size:13px; font-weight:500;
+  padding:6px 12px; border-radius:6px; white-space:nowrap;
+  transition:background .15s,color .15s;
+}
+.nav-link:hover { background:rgba(255,255,255,.1); color:rgba(255,255,255,.92); }
+.nav-link.active { background:rgba(255,255,255,.16); color:#fff; font-weight:600; }
+
+/* ── Page title band ── */
+header { background:var(--chrome); color:#fff; padding:48px; }
+header h1 { font-size:32px; font-weight:800; letter-spacing:-.5px; }
+header p { margin-top:8px; opacity:.85; font-size:15px; }
+
+main { max-width:800px; margin:0 auto; padding:56px 32px; flex:1; }
+
+.section-label {
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.8px;
+  color:var(--muted); margin-bottom:16px;
+}
+
+/* ── Doc-card grid (homepage sitemap) ── */
+.doc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-bottom:48px; }
+.doc-card {
+  border:1px solid var(--border); border-radius:12px; padding:24px; background:var(--card);
+  text-decoration:none; color:var(--text); display:flex; flex-direction:column; gap:8px;
+  transition:border-color .15s,box-shadow .15s;
+}
+.doc-card:hover { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-light); }
+.doc-card .icon { font-size:28px; margin-bottom:4px; }
+.doc-card .title { font-size:16px; font-weight:700; }
+.doc-card .desc { font-size:13.5px; color:var(--muted); line-height:1.55; }
+.doc-card .tag {
+  margin-top:4px; font-size:11px; font-weight:600; color:var(--accent);
+  background:var(--accent-light); display:inline-block; padding:2px 8px; border-radius:20px;
+}
+.doc-card .updated { font-size:12px; color:var(--muted); margin-top:auto; padding-top:12px; border-top:1px solid var(--border); }
+
+footer { padding:24px 48px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); background:var(--section-bg); }
+
+@media (max-width:600px) {
+  header, main, footer { padding-left:20px; padding-right:20px; }
+  header { padding-top:32px; padding-bottom:32px; }
+  .topnav { padding:10px 20px; height:auto; flex-wrap:wrap; gap:8px; }
+  .nav-links { gap:0; flex-wrap:wrap; }
+  .nav-link { padding:4px 8px; font-size:12px; }
+}

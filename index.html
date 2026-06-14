@@ -4,173 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Linkju Docs</title>
-  <style>
-    :root {
-      --accent: #2563eb;
-      --accent-light: #eff6ff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --bg: #ffffff;
-      --section-bg: #f9fafb;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      background: var(--accent);
-      color: white;
-      padding: 48px;
-    }
-    header h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
-    header p { margin-top: 8px; opacity: 0.8; font-size: 15px; }
-
-    main {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 56px 32px;
-      flex: 1;
-    }
-
-    .section-label {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .doc-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-      margin-bottom: 48px;
-    }
-
-    .doc-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      text-decoration: none;
-      color: var(--text);
-      transition: border-color 0.15s, box-shadow 0.15s;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .doc-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-light);
-    }
-    .doc-card .icon {
-      font-size: 28px;
-      margin-bottom: 4px;
-    }
-    .doc-card .title {
-      font-size: 16px;
-      font-weight: 700;
-    }
-    .doc-card .desc {
-      font-size: 13.5px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-    .doc-card .tag {
-      margin-top: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--accent-light);
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-    .doc-card .updated {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: auto;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-
-    footer {
-      padding: 24px 48px;
-      border-top: 1px solid var(--border);
-      font-size: 12px;
-      color: var(--muted);
-      background: var(--section-bg);
-    }
-
-    @media (max-width: 600px) {
-      header, main, footer { padding-left: 20px; padding-right: 20px; }
-      header { padding-top: 32px; padding-bottom: 32px; }
-    }
-
-    /* ── Top Navigation ── */
-    .topnav {
-      background: #1e3a8a;
-      padding: 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 50px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .nav-logo {
-      color: rgba(255,255,255,0.75);
-      font-weight: 700;
-      font-size: 13px;
-      text-decoration: none;
-      letter-spacing: 0.2px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .nav-logo:hover { color: white; }
-    .nav-logo.active { color: white; }
-    .nav-logo .logo-mark { font-size: 15px; }
-    .nav-links { display: flex; align-items: center; gap: 2px; }
-    .nav-link {
-      color: rgba(255,255,255,0.55);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-    }
-    .nav-link:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
-    .nav-link.active { background: rgba(255,255,255,0.15); color: white; font-weight: 600; }
-    @media (max-width: 600px) {
-      .topnav { padding: 10px 20px; height: auto; flex-wrap: wrap; gap: 8px; }
-      .nav-links { gap: 0; flex-wrap: wrap; }
-      .nav-link { padding: 4px 8px; font-size: 12px; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
 
-<nav class="topnav">
-  <a href="index.html" class="nav-logo active"><span class="logo-mark">◆</span> Linkju Docs</a>
-  <div class="nav-links">
-    <a href="mvp-research.html" class="nav-link">MVP 調研</a>
-    <a href="pm-bd-playbook.html" class="nav-link">PM/BD 框架</a>
-    <a href="gtm-strategy.html" class="nav-link">GTM 策略</a>
-    <a href="team.html" class="nav-link">團隊</a>
-    <a href="architecture.html" class="nav-link">架構設計</a>
-    <a href="cis-proposal.html" class="nav-link">品牌 CIS</a>
-  </div>
-</nav>
+<div id="site-nav"></div>
 
 <header>
   <h1>Linkju Docs</h1>
@@ -239,5 +77,6 @@
 </footer>
 
   <script src="tts.js" defer></script>
+  <script src="assets/site.js" defer></script>
 </body>
 </html>
