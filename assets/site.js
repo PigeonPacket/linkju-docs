@@ -11,6 +11,7 @@
     { href: 'team.html',           label: '團隊' },
     { href: 'architecture.html',   label: '架構設計' },
     { href: 'cis-proposal.html',   label: '品牌 CIS' },
+    { href: 'logo-concepts.html',  label: 'Logo 概念' },
   ];
 
   var path = location.pathname.split('/').pop() || 'index.html';
